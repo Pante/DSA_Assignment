@@ -20,7 +20,7 @@
 using namespace std;
 
 
-template <class T>
+template <class T, bool Recursive>
 struct Node {
     
     T item;
