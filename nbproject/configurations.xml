@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>AVLNode.h</itemPath>
       <itemPath>AVLTree.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -40,6 +41,8 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
+      <item path="AVLNode.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="AVLTree.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
@@ -66,6 +69,8 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="AVLNode.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="AVLTree.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
