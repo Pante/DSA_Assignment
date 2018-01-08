@@ -1,14 +1,32 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2018 Karus Labs.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 /* 
  * File:   Node.h
  * Author: Karus Labs
  *
- * Created on January 7, 2018, 3:06 PM
+ * Created on January 8, 2018, 3:12 PM
  */
 
 #ifndef NODE_H
@@ -21,53 +39,25 @@ namespace Assignment {
     template <class T>
     struct Node {
         
-        T item;
+        T value;
         unsigned int amount;
-        unsigned int height;
-        unsigned int balance;
         Node<T>* parent;
         Node<T>* left;
         Node<T>* right;
         
         
-        Node(T item, Node<T>* parent = nullptr) {
-            this->item = item;
+        Node(T value, Node<T>* parent = nullptr) {
+            this->value = value;
             amount = 1;
-            height = 1;
-            balance = 0;
             this->parent = parent;
             left = nullptr;
             right = nullptr;
         }
         
         
-        Node<T>* add(T item) {
-            if (this->item < item) {
-                return add(&right, item);
-                
-            } else if (this-> item > item) {
-                return add(&left, item);
-                
-            } else {
-                amount++;
-                return nullptr;
-            }
-        }
-        
-        Node<T>* add(Node<T>** node, T item) {
-            if (*node == nullptr) {
-                *node = new Node(item, this);
-                return nullptr;
-                
-            } else {
-                return *node;
-            }
-        }
-
-        
-        friend std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
-            for (int i = 0; i < node->amount; i++) {
-                stream << "value: " << node->item << std::endl;
+        std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
+            for (int i = 0; i < amount; i++) {
+                stream << value << std::endl;
             }
             return stream;
         }
