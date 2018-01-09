@@ -34,13 +34,14 @@
 
 #include <iostream>
 
-namespace Assignment {
+namespace assignment {
     
     template <class T>
     struct Node {
         
         T value;
         unsigned int amount;
+        int balance;
         Node<T>* parent;
         Node<T>* left;
         Node<T>* right;
@@ -49,6 +50,7 @@ namespace Assignment {
         Node(T value, Node<T>* parent = nullptr) {
             this->value = value;
             amount = 1;
+            balance = 0;
             this->parent = parent;
             left = nullptr;
             right = nullptr;

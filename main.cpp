@@ -12,12 +12,15 @@
  */
 
 #include <cstdlib>
+#include <iostream>
 
+#include "Iterator.h"
+#include "Node.h"
+#include "Tree.h"
+
+using namespace assignment;
 using namespace std;
 
-/*
- * 
- */
 int main(int argc, char** argv) {
 
     return 0;

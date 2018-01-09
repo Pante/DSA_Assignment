@@ -32,10 +32,16 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
+// I could use the implementation from Week 6's practical, but it is honestly really stupid
+// having to copy & paste the code simply to bypass the STL ban. Plus the STL's implementation
+// is far more optimal than a homebrew solution. If you insist on enforcing the ban here,
+// I'll literally copy and paste the STL queue into this file. :)
+
+#include <queue>
 #include "Node.h"
 
 
-namespace Assignment {
+namespace assignment {
     
     enum Traversal {
         ASCENDING, LEVEL
@@ -127,16 +133,41 @@ namespace Assignment {
     
     template <class T>
     class LevelIterator : Iterator {
-
-        LevelIterator(Node<T>* root) : Iterator<T>(root) {}
+        private:
+            std::queue<T> queue;
         
-        Node<T>* next() override;
+        public:
+            LevelIterator(Node<T>* root) : Iterator<T>(root) {
+                queue = std::queue<T>();
+            }
+
+            Node<T>* next() override;
         
     };
     
     template <class T>
     Node<T>* LevelIterator::next() {
-        
+        if (current && !current->parent) {
+            queue.push(current);
+            return current;
+            
+        } else if (!queue.empty()) {
+            queue.pop();
+                        
+            if (current->left) {
+                queue.push(current->left);
+            }
+            if (current->right) {
+                queue.push(current->right);
+            }
+            
+            current = queue.front();
+            
+            return current;
+            
+        } else {
+            return nullptr;
+        }
     }
     
 }

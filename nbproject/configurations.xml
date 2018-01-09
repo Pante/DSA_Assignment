@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>Balance.h</itemPath>
       <itemPath>Iterator.h</itemPath>
       <itemPath>Node.h</itemPath>
       <itemPath>Tree.h</itemPath>
@@ -42,6 +43,8 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
+      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
@@ -72,6 +75,8 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
