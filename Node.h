@@ -32,6 +32,7 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <memory>
 #include <iostream>
 
 namespace assignment {
@@ -57,9 +58,9 @@ namespace assignment {
         }
         
         
-        std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
-            for (int i = 0; i < amount; i++) {
-                stream << value << std::endl;
+        friend std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
+            for (int i = 0; i < node->amount; i++) {
+                stream << node->value << std::endl;
             }
             return stream;
         }

@@ -19,10 +19,11 @@
 #include "Tree.h"
 
 using namespace assignment;
-using namespace std;
 
 int main(int argc, char** argv) {
-
+    
+    AVLTree<int> tree {};
+    
     return 0;
 }
 

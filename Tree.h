@@ -40,16 +40,16 @@
 
 namespace assignment {
     
-    template <class T = int>
+    template <class T>
     class AVLTree {
         
         private:            
             Node<T>* root;
             Balance<T> balance;
-            unsigned int size;
+            unsigned int total;
             unsigned int nodes;
             
-            bool add(Node<T>* node, Node<T>* child, T value, int balance);
+            Node<T>* add(Node<T>* node, Node<T>*& child, T value, int balance);
             
             void rotateLeft(Node<T>* node);
             
@@ -67,11 +67,12 @@ namespace assignment {
             
             void remove(T value);
             
-            T get(unsigned int index);
+            T get(unsigned int index, Traversal traversal = Traversal::LEVEL);
             
-            bool contains(T value);
+            bool contains(T value, std::ostream& stream = std::cout);
             
-            friend std::ostream& operator<<(std::ostream& stream, const AVLTree<T>& tree);
+            template <class U>
+            friend std::ostream& operator<<(std::ostream& stream, const AVLTree<U>& tree);
             
             Iterator<T> iterator(Traversal traversal);
             
@@ -81,16 +82,16 @@ namespace assignment {
     
     
     template <class T>
-    AVLTree::AVLTree() {
+    AVLTree<T>::AVLTree() {
         root = nullptr;
-        balance = Balance();
-        size = 0;
+        balance = Balance<T>();
+        total = 0;
         nodes = 0;
     }
     
     
     template <class T>
-    void AVLTree::add(T value) {
+    void AVLTree<T>::add(T value) {
         Node<T>* node = root;
         while (node) {
             if (node->value < value) {
@@ -109,13 +110,13 @@ namespace assignment {
     
     
     template <class T>
-    Node<T>* AVLTree::add(Node<T>* node, Node<T>* child, T value, int balance) {
+    Node<T>* AVLTree<T>::add(Node<T>* node, Node<T>*& child, T value, int balance) {
         if (child) {
             return child;
             
         } else {
-            child = new Node(value, node);
-            this->balance->add(node, balance);
+            child = new Node<T>(value, node);
+            this->balance->add(root, node, balance);
             nodes++;
             return nullptr;
         }
@@ -123,136 +124,18 @@ namespace assignment {
     
     
     template <class T>
-    void AVLTree::remove(T value) {
+    void AVLTree<T>::remove(T value) {
         
     }
-
-    
-    // Parameterize
-    template <class T>
-    void AVLTree::rotateLeft(Node<T>* node) {
-        auto right = node->right;
-        auto rightLeft = right->left;
-        auto parent = node->parent;
-        
-        right->parent = parent;
-        right->left = node;
-        node->right = rightLeft;
-        node->parent = right;
-        
-        if (rightLeft) {
-            rightLeft->parent = node;
-        }
-        
-        if (node == root) {
-            root = right;
-            
-        } else if (parent->right == node) {
-            parent->right = right;
-            
-        } else {
-            parent->left = right;
-        }
-        
-        right->balance++;
-        node->balance = -right->balance;
-        
-        return right;
-    }
-    
-    template <class T>
-    void AVLTree::rotateRight(Node<T>* node) {
-        auto left = node->left;
-        auto leftRight = left->right;
-        auto parent = node->parent;
-        
-        left->parent = parent;
-        left->right = node;
-        node->right = leftRight;
-        node->parent = left;
-        
-        if (leftRight) {
-            leftRight->parent = node;
-        }
-        
-        if (node == root) {
-            root = left;
-            
-        } else if (parent->left == node) {
-            parent->left = left;
-            
-        } else {
-            parent->right = left;
-        }
-        
-        left->balance++;
-        node->balance = -left->balance;
-        
-        return left;
-    }
-    //
-    
-    // Parameterize
-    template <class T>
-    void AVLTree::rotateLeftRight(Node<T>* node) {
-        auto left = node->left;
-        auto leftRight = left->right;
-        auto parent = node->parent;
-        auto leftRightRight = leftRight->right;
-        auto leftRightLeft = leftRight->right;
-
-        leftRight->parent = parent;
-        node->left = leftRightRight;
-        left->right = leftRightLeft;
-        leftRight->left = left;
-        leftRight->right = node;
-        left->parent = leftRight;
-        node->parent = leftRight;
-
-        if (leftRightRight) {
-            leftRightRight->parent = node;
-        }
-
-        if (leftRightLeft) {
-            leftRightLeft->parent = left;
-        }
-
-        if (node == root) {
-            root = leftRight;
-        } else if (parent->left == node) {
-            parent->left = leftRight;
-        } else {
-            parent->right = leftRight;
-        }
-
-        if (leftRight.Balance == -1) {
-            node.Balance = 0;
-            left.Balance = 1;
-        } else if (leftRight.Balance == 0) {
-            node.Balance = 0;
-            left.Balance = 0;
-        } else {
-            node.Balance = -1;
-            left.Balance = 0;
-        }
-
-        leftRight.Balance = 0;
-    }
-    
-    template <class T>
-    void AVLTree::rotateRightLeft(Node<T>* node) {
-        
-    }
-    //
     
     
     template <class T>
-    T AVLTree::get(unsigned int index) {
+    T AVLTree<T>::get(unsigned int index, Traversal traversal) {
         if (index >= nodes) {
             throw std::out_of_range("Index is out of range: " + index);
         }
         
-        Iterator iterator = iterator(Traversal::LEVEL);
+        Iterator<T> iterator = iterator(traversal);
         for (unsigned int i = 0; i < index; i++) {
             iterator.next();
         }
@@ -262,7 +145,7 @@ namespace assignment {
     
     
     template <class T>
-    bool AVLTree::contains(T value, std::ostream& stream = std::cout) {
+    bool AVLTree<T>::contains(T value, std::ostream& stream) {
         if (size == 1 && root->value == value) {
             stream << "root" << std::endl;
             return true;
@@ -288,8 +171,8 @@ namespace assignment {
     
     
     template <class T>
-    friend std::ostream& operator<<(std::ostream& stream, const AVLTree<T>& tree) {
-        Iterator iterator = iterator(Traversal::ASCENDING);
+    std::ostream& operator<<(std::ostream& stream, const AVLTree<T>& tree) {
+        Iterator<T> iterator = tree->iterator(Traversal::ASCENDING);
         Node<T>* node;
         while ((node = iterator.next())) {
             stream << node;
@@ -299,13 +182,13 @@ namespace assignment {
     
     
     template <class T>
-    Iterator<T> AVLTree::iterator(Traversal traversal) {
+    Iterator<T> AVLTree<T>::iterator(Traversal traversal) {
         switch (traversal) {
             case Traversal::ASCENDING:
-                return AscendingIterator(root);
+                return AscendingIterator<T>(root);
                 
             case Traversal::LEVEL:
-                return LevelIterator(root);
+                return LevelIterator<T>(root);
                 
             default:
                 throw std::invalid_argument();
@@ -314,8 +197,8 @@ namespace assignment {
     
     
     template <class T>
-    unsigned int AVLTree::size() {
-        return size;
+    unsigned int AVLTree<T>::size() {
+        return total;
     }
     
 }

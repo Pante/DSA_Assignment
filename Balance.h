@@ -39,38 +39,53 @@ namespace assignment {
     
     template <class T>
     class Balance {
-        public:
-            void add(Node<T>* node, int balance);
+        private:            
+            void rotateLeft(Node<T>* root, Node<T>* node);
             
-            void remove(Node<T>* node, int balance);
+            void rotateRight(Node<T>* root, Node<T>* node);
+            
+            void rotate(Node<T>* root, Node<T>* node, Node<T>*& inserted, Node<T>*& opposite, Node<T>*& oppositeChild, Node<T>*& parentOpposite, Node<T>*& parentInserted, int balance);
+            
+            
+            void rotateLeftRight(Node<T>* root, Node<T>* node);
+            
+            void rotateRightLeft(Node<T>* root, Node<T>* node);
+            
+            void rotateTwice();
+            
+        public:
+
+            virtual void add(Node<T>* root, Node<T>* node, int balance);
+            
+            virtual void remove(Node<T>* root, Node<T>* node, int balance);
+            
     };
     
     
     template <class T>
-    void Balance::add(Node<T>* node, int balance) {
+    void Balance<T>::add(Node<T>* root, Node<T>* node, int balance) {
         while (node) {
             int balance = node->balance += balance;
-            // Parameterize
             if (balance == 0) {
                 return;
                 
             } else if (balance == 2) {
                 if (node->left->balance == 1) {
-                    rotateRight(node);
+                    rotateRight(root, node);
                     
                 } else {
-                    rotateLeftRight(node);
+                    rotateLeftRight(root, node);
                 }
                 
             } else if (balance == -2) {
                 if (node->right->balance == -1) {
-                    rotateLeft(node);
+                    rotateLeft(root, node);
                     
                 } else {
-                    rotateLeftRight(node);
+                    rotateLeftRight(root, node);
                 }
             }
-            //
+
             auto parent = node->parent;
             if (parent) {
                 balance = parent->left == node ? 1 : -1;
@@ -81,16 +96,61 @@ namespace assignment {
     
     
     template <class T>
-    void Balance::remove(Node<T>* node, int balance) {
+    void Balance<T>::remove(Node<T>* root, Node<T>* node, int balance) {
         
+    }
+
+    
+    template <class T>
+    void Balance<T>::rotateLeft(Node<T>* root, Node<T>* node) {
+        rotate(root, node, node->left, node->right, node->right->left, node->parent->left, node->parent->right, 1);
+    }
+    
+    template <class T>
+    void Balance<T>::rotateRight(Node<T>* root, Node<T>* node) {
+        rotate(root, node, node->right, node->left, node->left->right, node->parent->right, node->parent->left, -1);
+    }
+    
+    template <class T>
+    void Balance<T>::rotate(Node<T>* root, Node<T>* node, Node<T>*& inserted, Node<T>*& opposite, Node<T>*& oppositeChild, Node<T>*& parentInserted, Node<T>*& parentOpposite, int balance) {
+        opposite->parent = node->parent;
+        opposite->left = node;
+        node->right = oppositeChild;
+        node->parent = opposite;
+        
+        if (oppositeChild) {
+            oppositeChild->parent = node;
+        }
+        
+        if (node == root) {
+            root = opposite;
+            
+        } else if (parentOpposite == node) {
+            parentOpposite = opposite;
+            
+        } else {
+            parentInserted = opposite;
+        }
+        
+        opposite->balance += balance;
+        node->balance = -opposite->balance;
     }
     
     
     template <class T>
-    class Rotation {
+    void Balance<T>::rotateLeftRight(Node<T>* root, Node<T>* node) {
         
+    }
+    
+    template <class T>
+    void Balance<T>::rotateRightLeft(Node<T>* root, Node<T>* node) {
         
-    };
+    }
+    
+    template <class T>
+    void Balance<T>::rotateTwice() {
+        
+    }
     
 }
 

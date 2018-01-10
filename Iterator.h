@@ -54,32 +54,29 @@ namespace assignment {
             Node<T> current;
             
         public:
-            Iterator(Node<T>* root);
+            Iterator(Node<T>* root) : current {root} {}
             
             virtual Node<T>* next() =0;
         
-    };
-    
-    
-    template <class T>
-    Iterator::Iterator(Node<T>* root) : current {root} {}
+    }; 
 
     
-    
     template <class T>
-    class AscendingIterator : Iterator {
+    class AscendingIterator : Iterator<T> {
         private:
-            enum direction {
-                start, right, parent, end
-            };
+            enum Direction {
+                START, RIGHT, PARENT, END 
+           };
             
             Node<T>* right;
-            direction direction;
+            Direction direction;
             
         public:
+            using Iterator<T>::current;
+            
             AscendingIterator(Node<T>* root) : Iterator<T>(root) {
                 right = root;
-                direction = root ? direction::start : direction::end;
+                direction = root ? Direction::START : Direction::END;
             }
         
             Node<T>* next() override;
@@ -87,13 +84,13 @@ namespace assignment {
     };
     
     template <class T>
-    Node<T>* AscendingIterator::next() {
+    Node<T>* AscendingIterator<T>::next() {
         switch (direction) {
-            case direction::start:
-                direction = direction::right;
+            case Direction::START:
+                direction = Direction::RIGHT;
                 return current;
             
-            case direction::right:
+            case Direction::RIGHT:
                 current = right;
                 while (!current->left) {
                     current = current->left;
@@ -101,12 +98,12 @@ namespace assignment {
                 
                 right = current->right;
                 if (!right) {
-                    direction = direction::parent;
+                    direction = Direction::PARENT;
                 } 
                 
                 return current;
                 
-            case direction::parent:
+            case Direction::PARENT:
                 while (current->parent) {
                     auto previous = current;
                     current = current->parent;
@@ -115,13 +112,13 @@ namespace assignment {
                         right = current->right;
                         
                         if (right) {
-                            direction = direction::right;
+                            direction = Direction::RIGHT;
                         }
                         
                         return current;
                     }
                 }
-                direction = direction::end;
+                direction = Direction::END;
                         
                 return nullptr;
                 
@@ -132,11 +129,13 @@ namespace assignment {
     
     
     template <class T>
-    class LevelIterator : Iterator {
+    class LevelIterator : Iterator<T> {
         private:
             std::queue<T> queue;
         
         public:
+            using Iterator<T>::current;
+            
             LevelIterator(Node<T>* root) : Iterator<T>(root) {
                 queue = std::queue<T>();
             }
@@ -146,7 +145,7 @@ namespace assignment {
     };
     
     template <class T>
-    Node<T>* LevelIterator::next() {
+    Node<T>* LevelIterator<T>::next() {
         if (current && !current->parent) {
             queue.push(current);
             return current;
