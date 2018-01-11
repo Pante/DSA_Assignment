@@ -59,8 +59,8 @@ namespace assignment {
         
         
         friend std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
-            for (int i = 0; i < node->amount; i++) {
-                stream << node->value << std::endl;
+            for (int i = 0; i < node.amount; i++) {
+                stream << node.value << std::endl;
             }
             return stream;
         }

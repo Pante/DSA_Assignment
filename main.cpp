@@ -19,10 +19,16 @@
 #include "Tree.h"
 
 using namespace assignment;
+using namespace std;
 
 int main(int argc, char** argv) {
     
     AVLTree<int> tree {};
+    tree.add(2);
+    
+    auto itr = tree.iterator();
+    itr->next();
+    auto node = itr->next();
     
     return 0;
 }

@@ -51,7 +51,7 @@ namespace assignment {
     template <class T>
     class Iterator {
         protected:
-            Node<T> current;
+            Node<T>* current;
             
         public:
             Iterator(Node<T>* root) : current {root} {}
@@ -62,7 +62,7 @@ namespace assignment {
 
     
     template <class T>
-    class AscendingIterator : Iterator<T> {
+    class AscendingIterator : public Iterator<T> {
         private:
             enum Direction {
                 START, RIGHT, PARENT, END 
@@ -108,7 +108,7 @@ namespace assignment {
                     auto previous = current;
                     current = current->parent;
                     
-                    if (current.left == previous) {
+                    if (current->left == previous) {
                         right = current->right;
                         
                         if (right) {
@@ -129,15 +129,15 @@ namespace assignment {
     
     
     template <class T>
-    class LevelIterator : Iterator<T> {
+    class LevelIterator : public Iterator<T> {
         private:
-            std::queue<T> queue;
+            std::queue<Node<T>*> queue;
         
         public:
             using Iterator<T>::current;
             
             LevelIterator(Node<T>* root) : Iterator<T>(root) {
-                queue = std::queue<T>();
+                queue = std::queue<Node<T>*>();
             }
 
             Node<T>* next() override;

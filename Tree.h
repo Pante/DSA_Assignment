@@ -51,13 +51,9 @@ namespace assignment {
             
             Node<T>* add(Node<T>* node, Node<T>*& child, T value, int balance);
             
-            void rotateLeft(Node<T>* node);
+            void remove(Node<T>* node);
             
-            void rotateRight(Node<T>* node);
-            
-            void rotateLeftRight(Node<T>* node);
-            
-            void rotateRightLeft(Node<T>* node);
+            void replace(Node<T>* source, Node<T>* target);
             
         public:
             AVLTree();
@@ -65,7 +61,7 @@ namespace assignment {
             
             void add(T value);
             
-            void remove(T value);
+            bool remove(T value);
             
             T get(unsigned int index, Traversal traversal = Traversal::LEVEL);
             
@@ -74,7 +70,7 @@ namespace assignment {
             template <class U>
             friend std::ostream& operator<<(std::ostream& stream, const AVLTree<U>& tree);
             
-            Iterator<T> iterator(Traversal traversal);
+            Iterator<T>* iterator(Traversal traversal = Traversal::ASCENDING);
             
             unsigned int size();
             
@@ -92,20 +88,25 @@ namespace assignment {
     
     template <class T>
     void AVLTree<T>::add(T value) {
-        Node<T>* node = root;
-        while (node) {
-            if (node->value < value) {
-                node = add(node, node->right, value, 1);
-                
-            } else if (node->value > value) {
-                node = add(node, node->right, value, -1);
-                
-            } else {
-                node->amount++;
-                break;
+        if (root) {
+            Node<T>* node = root;
+            while (node) {
+                if (node->value > value) {
+                    node = add(node, node->right, value, -1);
+
+                } else if (node->value < value) {
+                    node = add(node, node->right, value, 1);
+
+                } else {
+                    node->amount++;
+                    break;
+                }
             }
+        } else {
+            root = new Node<T>(value);
         }
-        size++;
+
+        total++;
     }
     
     
@@ -116,7 +117,7 @@ namespace assignment {
             
         } else {
             child = new Node<T>(value, node);
-            this->balance->add(root, node, balance);
+            this->balance.add(root, node, balance);
             nodes++;
             return nullptr;
         }
@@ -124,7 +125,37 @@ namespace assignment {
     
     
     template <class T>
-    void AVLTree<T>::remove(T value) {
+    bool AVLTree<T>::remove(T value) {
+        Node<T>* node = root;
+        while (node) {
+            if (node->value > value) {
+                node = node->left;
+                
+            } else if (node->value < value) {
+                node = node->right;
+                
+            } else {
+                if (node->amount == 1) {
+                    remove(node);
+                    
+                } else {
+                    node->amount--;
+                }
+                size--;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    template <class T>
+    void AVLTree<T>::remove(Node<T>* node) {
+        
+    }
+    
+    template <class T>
+    void AVLTree<T>::replace(Node<T>* source, Node<T>* target) {
         
     }
     
@@ -171,27 +202,34 @@ namespace assignment {
     
     
     template <class T>
-    std::ostream& operator<<(std::ostream& stream, const AVLTree<T>& tree) {
-        Iterator<T> iterator = tree->iterator(Traversal::ASCENDING);
+    std::ostream& operator<<(std::ostream& stream, AVLTree<T>& tree) {
+        Iterator<T>* iterator = tree.iterator(Traversal::ASCENDING);
         Node<T>* node;
-        while ((node = iterator.next())) {
-            stream << node;
+        
+        stream << "Tree: [";
+        while ((node = iterator->next())) {
+            std::cout << "POKE";
+            stream << *node << " ";
         }
+        stream << "]" << std::endl;
+        
+        delete iterator;
+        
         return stream;
     }
     
     
     template <class T>
-    Iterator<T> AVLTree<T>::iterator(Traversal traversal) {
+    Iterator<T>* AVLTree<T>::iterator(Traversal traversal) {
         switch (traversal) {
             case Traversal::ASCENDING:
-                return AscendingIterator<T>(root);
+                return new AscendingIterator<T>(root);
                 
             case Traversal::LEVEL:
-                return LevelIterator<T>(root);
+                return new LevelIterator<T>(root);
                 
             default:
-                throw std::invalid_argument();
+                throw std::invalid_argument("Unsupported traversal type");
         }
     }
     
