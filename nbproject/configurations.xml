@@ -4,10 +4,10 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>Balance.h</itemPath>
+      <itemPath>B.h</itemPath>
       <itemPath>Iterator.h</itemPath>
       <itemPath>Node.h</itemPath>
-      <itemPath>Tree.h</itemPath>
+      <itemPath>T.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -22,6 +22,9 @@
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1" displayName="NodeTest" projectFiles="true" kind="TEST">
+        <itemPath>tests/NodeTest.cpp</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -43,15 +46,32 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
-      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      <item path="B.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Tree.h" ex="false" tool="3" flavor2="0">
+      <item path="T.h" ex="false" tool="3" flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NodeTest.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -75,15 +95,32 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      <item path="B.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Tree.h" ex="false" tool="3" flavor2="0">
+      <item path="T.h" ex="false" tool="3" flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NodeTest.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

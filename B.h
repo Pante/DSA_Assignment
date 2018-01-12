@@ -32,7 +32,7 @@
 #ifndef BALANCE_H
 #define BALANCE_H
 
-#include "Node.h"
+#include "N.h"
 
 
 namespace assignment {

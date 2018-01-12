@@ -14,21 +14,44 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "Iterator.h"
 #include "Node.h"
-#include "Tree.h"
+#include "Iterator.h"
 
 using namespace assignment;
 using namespace std;
 
 int main(int argc, char** argv) {
     
-    AVLTree<int> tree {};
-    tree.add(2);
+    auto node = make_shared<Node<int>>(2);
+    node->left = make_shared<Node<int>>(1);
+    node->right = make_shared<Node<int>>(3);
     
-    auto itr = tree.iterator();
-    itr->next();
-    auto node = itr->next();
+    node->left->parent = node;
+    node->right->parent = node;
+    
+    auto ascending = AscendingIterator<int>(node);
+    auto level = LevelIterator<int>(node);
+
+    cout << "ASCENDING: " << ascending->value << endl;
+    cout << "LEVEL: " << level->value << endl;
+    
+    ascending++;
+    level++;
+    
+    cout << "ASCENDING: " << ascending->value << endl;
+    cout << "LEVEL: " << level->value << endl;
+    
+    ascending++;
+    level++;
+    
+    cout << "ASCENDING: " << ascending->value << endl;
+    cout << "LEVEL: " << level->value << endl;
+    
+    ascending++;
+    level++;
+    
+    cout << "ASCENDING: " << ascending->value << endl;
+    cout << "LEVEL: " << level->value << endl;
     
     return 0;
 }

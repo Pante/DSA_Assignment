@@ -26,46 +26,76 @@
  * File:   Node.h
  * Author: Karus Labs
  *
- * Created on January 8, 2018, 3:12 PM
+ * Created on January 12, 2018, 12:11 AM
  */
 
 #ifndef NODE_H
 #define NODE_H
 
 #include <memory>
-#include <iostream>
+
+using namespace std;
 
 namespace assignment {
     
-    template <class T>
+    template <class T = int>
     struct Node {
         
         T value;
-        unsigned int amount;
+        int amount;
         int balance;
-        Node<T>* parent;
-        Node<T>* left;
-        Node<T>* right;
+        shared_ptr<Node<T>> parent;
+        shared_ptr<Node<T>> left;
+        shared_ptr<Node<T>> right;
+              
         
-        
-        Node(T value, Node<T>* parent = nullptr) {
+        Node(T value, shared_ptr<Node<T>> parent = shared_ptr<Node<T>>(nullptr)) {
             this->value = value;
             amount = 1;
             balance = 0;
             this->parent = parent;
-            left = nullptr;
-            right = nullptr;
+            left = shared_ptr<Node<T>>(nullptr);
+            right = shared_ptr<Node<T>>(nullptr);
         }
+
         
-        
-        friend std::ostream& operator<<(std::ostream& stream, const Node<T>& node) {
+        friend ostream& operator<<(const ostream& stream, const Node<T>& node) {
             for (int i = 0; i < node.amount; i++) {
-                stream << node.value << std::endl;
+                stream << node.value << endl;
             }
             return stream;
         }
-        
+            
     };
+
+    
+    template <class T>
+    void swap(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
+        set(a, b);
+        set(b, a);
+        
+        a->parent.swap(b->parent);
+        a->left.swap(b->left);
+        a->right.swap(b->right);
+    }
+    
+    template <class T>
+    void set(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
+        if (target->left) {
+            target->left->parent = source;
+        }
+        if (target->right) {
+            target->right->parent = source;
+        }
+        if (target->parent) {
+            if (target->parent->left == source) {
+                target->parent->left = source;
+
+            } else {
+                target->parent->right = source;
+            }
+        }
+    }
     
 }
 

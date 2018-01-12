@@ -26,20 +26,17 @@
  * File:   Iterator.h
  * Author: Karus Labs
  *
- * Created on January 8, 2018, 3:19 PM
+ * Created on January 12, 2018, 1:41 AM
  */
 
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
-// I could use the implementation from Week 6's practical, but it is honestly really stupid
-// having to copy & paste the code simply to bypass the STL ban. Plus the STL's implementation
-// is far more optimal than a homebrew solution. If you insist on enforcing the ban here,
-// I'll literally copy and paste the STL queue into this file. :)
-
 #include <queue>
+#include <stdexcept>
 #include "Node.h"
 
+using namespace std;
 
 namespace assignment {
     
@@ -47,128 +44,132 @@ namespace assignment {
         ASCENDING, LEVEL
     };
     
-    
     template <class T>
     class Iterator {
         protected:
-            Node<T>* current;
-            
-        public:
-            Iterator(Node<T>* root) : current {root} {}
-            
-            virtual Node<T>* next() =0;
+            shared_ptr<Node<T>> current;
         
-    }; 
-
+        public:
+            Iterator(shared_ptr<Node<T>> root);
+            
+            virtual Iterator<T>& operator++(int increment);
+            
+            virtual Iterator<T>& operator++() =0;
+            
+            shared_ptr<Node<T>> operator->();
+    };
+    
+    template <class T>
+    Iterator<T>::Iterator(shared_ptr<Node<T>> root) {
+        current = root;
+    }
+    
+    template <class T>
+    Iterator<T>& Iterator<T>::operator++(int increment) {
+        if (increment < 0) {
+            throw invalid_argument("argument must be equal to or more than 0");
+        }
+        
+        for (int i = 0; i <= increment; i++) {
+            this->operator++();
+        }
+        
+        return *this;
+    }
+    
+    template <class T>
+    shared_ptr<Node<T>> Iterator<T>::operator->() {
+        return current;
+    }
+    
     
     template <class T>
     class AscendingIterator : public Iterator<T> {
         private:
             enum Direction {
-                START, RIGHT, PARENT, END 
-           };
+                RIGHT, PARENT, END
+            };
             
-            Node<T>* right;
+            shared_ptr<Node<T>> right;
             Direction direction;
             
         public:
             using Iterator<T>::current;
-            
-            AscendingIterator(Node<T>* root) : Iterator<T>(root) {
+            using Iterator<T>::operator++;
+
+            AscendingIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
+                current = root;
                 right = root;
-                direction = root ? Direction::START : Direction::END;
+                direction = (current == nullptr) ? Direction::END : Direction::RIGHT;
             }
-        
-            Node<T>* next() override;
-        
+            
+            Iterator<T>& operator++() override;
     };
     
     template <class T>
-    Node<T>* AscendingIterator<T>::next() {
-        switch (direction) {
-            case Direction::START:
-                direction = Direction::RIGHT;
-                return current;
-            
-            case Direction::RIGHT:
-                current = right;
-                while (!current->left) {
-                    current = current->left;
-                }
-                
-                right = current->right;
-                if (!right) {
-                    direction = Direction::PARENT;
-                } 
-                
-                return current;
-                
-            case Direction::PARENT:
-                while (current->parent) {
-                    auto previous = current;
-                    current = current->parent;
-                    
-                    if (current->left == previous) {
-                        right = current->right;
-                        
-                        if (right) {
-                            direction = Direction::RIGHT;
-                        }
-                        
-                        return current;
+    Iterator<T>& AscendingIterator<T>::operator++() {
+        if (direction == Direction::RIGHT) {
+            current = right;
+            while (current->left) {
+                current = current->left;
+            }
+
+            right = current->right;
+            if (!right) {
+                direction = Direction::PARENT;
+            }
+        } else if (direction == Direction::PARENT) {
+            while (current->parent) {
+                auto previous = current;
+                current = current->parent;
+
+                if (current->left == previous) {
+                    right = current->right;
+                    if (right) {
+                        direction = Direction::RIGHT;
                     }
+                    return *this;
                 }
-                direction = Direction::END;
-                        
-                return nullptr;
-                
-            default:
-                return nullptr;
+            }
+            direction = Direction::END;
         }
+        return *this;
     }
     
     
     template <class T>
     class LevelIterator : public Iterator<T> {
         private:
-            std::queue<Node<T>*> queue;
+            std::queue<shared_ptr<Node<T>>> nodes;
         
         public:
             using Iterator<T>::current;
+            using Iterator<T>::operator++;
             
-            LevelIterator(Node<T>* root) : Iterator<T>(root) {
-                queue = std::queue<Node<T>*>();
+            LevelIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
+                nodes = std::queue<shared_ptr<Node<T>>>();
+                nodes.push(current);
             }
-
-            Node<T>* next() override;
-        
+            
+            LevelIterator<T>& operator++() override;  
     };
     
     template <class T>
-    Node<T>* LevelIterator<T>::next() {
-        if (current && !current->parent) {
-            queue.push(current);
-            return current;
+    LevelIterator<T>& LevelIterator<T>::operator++() {
+        if (!nodes.empty()) {           
+            current = nodes.front();
+            nodes.pop();
             
-        } else if (!queue.empty()) {
-            queue.pop();
-                        
             if (current->left) {
-                queue.push(current->left);
+                nodes.push(current->left);
             }
             if (current->right) {
-                queue.push(current->right);
+                nodes.push(current->right);
             }
-            
-            current = queue.front();
-            
-            return current;
-            
-        } else {
-            return nullptr;
         }
+        
+        return *this;
     }
-    
 }
 
 #endif /* ITERATOR_H */

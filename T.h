@@ -34,9 +34,9 @@
 
 #include <stdexcept>
 
-#include "Iterator.h"
-#include "Node.h"
-#include "Balance.h"
+#include "I.h"
+#include "N.h"
+#include "B.h"
 
 namespace assignment {
     
