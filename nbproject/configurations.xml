@@ -5,9 +5,11 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>B.h</itemPath>
+      <itemPath>Balance.h</itemPath>
       <itemPath>Iterator.h</itemPath>
       <itemPath>Node.h</itemPath>
       <itemPath>T.h</itemPath>
+      <itemPath>Tree.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -48,11 +50,15 @@
       </compileType>
       <item path="B.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="T.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Tree.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
@@ -97,11 +103,15 @@
       </compileType>
       <item path="B.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Balance.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Iterator.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Node.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="T.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Tree.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>

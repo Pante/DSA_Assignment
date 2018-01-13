@@ -31,28 +31,12 @@ int main(int argc, char** argv) {
     
     auto ascending = AscendingIterator<int>(node);
     auto level = LevelIterator<int>(node);
+    
+    while (ascending++) {
+        cout << "ASCENDING: " << ascending->value << endl;
 
-    cout << "ASCENDING: " << ascending->value << endl;
-    cout << "LEVEL: " << level->value << endl;
-    
-    ascending++;
-    level++;
-    
-    cout << "ASCENDING: " << ascending->value << endl;
-    cout << "LEVEL: " << level->value << endl;
-    
-    ascending++;
-    level++;
-    
-    cout << "ASCENDING: " << ascending->value << endl;
-    cout << "LEVEL: " << level->value << endl;
-    
-    ascending++;
-    level++;
-    
-    cout << "ASCENDING: " << ascending->value << endl;
-    cout << "LEVEL: " << level->value << endl;
-    
+    }
+
     return 0;
 }
 

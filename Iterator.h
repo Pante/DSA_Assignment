@@ -48,13 +48,14 @@ namespace assignment {
     class Iterator {
         protected:
             shared_ptr<Node<T>> current;
+            unsigned int amount;
         
         public:
             Iterator(shared_ptr<Node<T>> root);
             
-            virtual Iterator<T>& operator++(int increment);
+            virtual bool operator++(int);
             
-            virtual Iterator<T>& operator++() =0;
+            virtual bool operator++() =0;
             
             shared_ptr<Node<T>> operator->();
     };
@@ -62,19 +63,12 @@ namespace assignment {
     template <class T>
     Iterator<T>::Iterator(shared_ptr<Node<T>> root) {
         current = root;
+        amount = 0;
     }
     
     template <class T>
-    Iterator<T>& Iterator<T>::operator++(int increment) {
-        if (increment < 0) {
-            throw invalid_argument("argument must be equal to or more than 0");
-        }
-        
-        for (int i = 0; i <= increment; i++) {
-            this->operator++();
-        }
-        
-        return *this;
+    bool Iterator<T>::operator++(int) {
+        return operator++();
     }
     
     template <class T>
@@ -103,11 +97,11 @@ namespace assignment {
                 direction = (current == nullptr) ? Direction::END : Direction::RIGHT;
             }
             
-            Iterator<T>& operator++() override;
+            bool operator++() override;
     };
     
     template <class T>
-    Iterator<T>& AscendingIterator<T>::operator++() {
+    bool AscendingIterator<T>::operator++() {
         if (direction == Direction::RIGHT) {
             current = right;
             while (current->left) {
@@ -118,6 +112,8 @@ namespace assignment {
             if (!right) {
                 direction = Direction::PARENT;
             }
+            return true;
+            
         } else if (direction == Direction::PARENT) {
             while (current->parent) {
                 auto previous = current;
@@ -128,12 +124,14 @@ namespace assignment {
                     if (right) {
                         direction = Direction::RIGHT;
                     }
-                    return *this;
+                    return true;
                 }
             }
             direction = Direction::END;
+            return false;
+            
         }
-        return *this;
+        return false;
     }
     
     
@@ -148,15 +146,17 @@ namespace assignment {
             
             LevelIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
                 nodes = std::queue<shared_ptr<Node<T>>>();
-                nodes.push(current);
+                if (current) {
+                    nodes.push(current);
+                }
             }
             
-            LevelIterator<T>& operator++() override;  
+            bool operator++() override;  
     };
     
     template <class T>
-    LevelIterator<T>& LevelIterator<T>::operator++() {
-        if (!nodes.empty()) {           
+    bool LevelIterator<T>::operator++() {
+        if (!nodes.empty()) {
             current = nodes.front();
             nodes.pop();
             
@@ -168,7 +168,7 @@ namespace assignment {
             }
         }
         
-        return *this;
+        return !nodes.empty();
     }
 }
 
