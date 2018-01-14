@@ -48,7 +48,6 @@ namespace assignment {
     class Iterator {
         protected:
             shared_ptr<Node<T>> current;
-            unsigned int amount;
         
         public:
             Iterator(shared_ptr<Node<T>> root);
@@ -57,13 +56,12 @@ namespace assignment {
             
             virtual bool operator++() =0;
             
-            shared_ptr<Node<T>> operator->();
+            shared_ptr<Node<T>> get();
     };
     
     template <class T>
     Iterator<T>::Iterator(shared_ptr<Node<T>> root) {
         current = root;
-        amount = 0;
     }
     
     template <class T>
@@ -72,7 +70,7 @@ namespace assignment {
     }
     
     template <class T>
-    shared_ptr<Node<T>> Iterator<T>::operator->() {
+    shared_ptr<Node<T>> Iterator<T>::get() {
         return current;
     }
     
@@ -90,7 +88,7 @@ namespace assignment {
         public:
             using Iterator<T>::current;
             using Iterator<T>::operator++;
-
+            
             AscendingIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
                 current = root;
                 right = root;
@@ -166,9 +164,11 @@ namespace assignment {
             if (current->right) {
                 nodes.push(current->right);
             }
+            return true;
+            
+        } else {
+            return false;
         }
-        
-        return !nodes.empty();
     }
 }
 

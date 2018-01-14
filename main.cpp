@@ -12,31 +12,34 @@
  */
 
 #include <cstdlib>
+#include <memory>
 #include <iostream>
 
 #include "Node.h"
 #include "Iterator.h"
+#include "Tree.h"
 
 using namespace assignment;
 using namespace std;
 
 int main(int argc, char** argv) {
     
-    auto node = make_shared<Node<int>>(2);
-    node->left = make_shared<Node<int>>(1);
-    node->right = make_shared<Node<int>>(3);
+    AVLTree<int> tree {};
+    tree.add(2);
+    tree.add(1);
+    tree.add(3);
+    tree.add(2);
     
-    node->left->parent = node;
-    node->right->parent = node;
+    Node<int> node {3};
+    node.amount = 2;
     
-    auto ascending = AscendingIterator<int>(node);
-    auto level = LevelIterator<int>(node);
-    
-    while (ascending++) {
-        cout << "ASCENDING: " << ascending->value << endl;
-
+    try {
+        cout << tree << endl;
+    } catch (invalid_argument) {
+        cout << "Error" << endl;
     }
-
+    
+    
     return 0;
 }
 

@@ -39,10 +39,10 @@ namespace assignment {
     template <class T>
     class Balance {
         private:
-            shared_ptr<Node<T>>& root;
+            shared_ptr<Node<T>> root;
             
         public:
-            Balance(shared_ptr<Node<T>>& root);
+            Balance(shared_ptr<Node<T>> root);
             
             void add(shared_ptr<Node<T>> node, int balance);
             
@@ -50,17 +50,17 @@ namespace assignment {
     };
     
     template <class T>
-    Balance::Balance(shared_ptr<Node<T> >& root) {
+    Balance<T>::Balance(shared_ptr<Node<T>> root) {
         this->root = root;
     }
     
     template <class T>
-    void Balance::add(shared_ptr<Node<T> > node, int balance) {
+    void Balance<T>::add(shared_ptr<Node<T> > node, int balance) {
         
     }
     
     template <class T>
-    void Balance::remove(shared_ptr<Node<T> > node, int balance) {
+    void Balance<T>::remove(shared_ptr<Node<T> > node, int balance) {
         
     }
     

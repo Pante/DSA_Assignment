@@ -59,7 +59,7 @@ namespace assignment {
         }
 
         
-        friend ostream& operator<<(const ostream& stream, const Node<T>& node) {
+        friend ostream& operator<<(ostream& stream, const Node<T>& node) {
             for (int i = 0; i < node.amount; i++) {
                 stream << node.value << endl;
             }
@@ -71,28 +71,31 @@ namespace assignment {
     
     template <class T>
     void swap(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
-        set(a, b);
-        set(b, a);
-        
-        a->parent.swap(b->parent);
-        a->left.swap(b->left);
-        a->right.swap(b->right);
+        T& temp = a->value;
+        a->value = b->value;
+        b->value = temp;
     }
     
     template <class T>
-    void set(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
-        if (target->left) {
-            target->left->parent = source;
+    void replace(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
+        target->left = source->left
+    }
+    
+    template <class T>
+    void set(shared_ptr<Node<T>> target, shared_ptr<Node<T>> source) {
+        target->balance;
+        if (source->left) {
+            source->left->parent = target;
         }
-        if (target->right) {
-            target->right->parent = source;
+        if (source->right) {
+            source->right->parent = target;
         }
-        if (target->parent) {
-            if (target->parent->left == source) {
-                target->parent->left = source;
+        if (source->parent) {
+            if (source->parent->left == target) {
+                source->parent->left = target;
 
             } else {
-                target->parent->right = source;
+                source->parent->right = target;
             }
         }
     }
