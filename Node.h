@@ -67,37 +67,10 @@ namespace assignment {
         }
             
     };
-
-    
-    template <class T>
-    void swap(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
-        T& temp = a->value;
-        a->value = b->value;
-        b->value = temp;
-    }
     
     template <class T>
     void replace(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
-        target->left = source->left
-    }
-    
-    template <class T>
-    void set(shared_ptr<Node<T>> target, shared_ptr<Node<T>> source) {
-        target->balance;
-        if (source->left) {
-            source->left->parent = target;
-        }
-        if (source->right) {
-            source->right->parent = target;
-        }
-        if (source->parent) {
-            if (source->parent->left == target) {
-                source->parent->left = target;
-
-            } else {
-                source->parent->right = target;
-            }
-        }
+        
     }
     
 }

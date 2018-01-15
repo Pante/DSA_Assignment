@@ -26,15 +26,17 @@ int main(int argc, char** argv) {
     
     AVLTree<int> tree {};
     tree.add(2);
-    tree.add(1);
-    tree.add(3);
     tree.add(2);
-    
-    Node<int> node {3};
-    node.amount = 2;
+    tree.add(3);
     
     try {
         cout << tree << endl;
+        cout << "nodes: " << tree.nodes() << " size: " << tree.size() << endl;
+        
+        tree.remove(2);
+        
+        cout << tree << endl;
+        cout << "nodes: " << tree.nodes() << " size: " << tree.size() << endl;
     } catch (invalid_argument) {
         cout << "Error" << endl;
     }

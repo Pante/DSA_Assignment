@@ -54,7 +54,9 @@ namespace assignment {
             
             shared_ptr<Node<T>> add(T value, shared_ptr<Node<T>> parent, shared_ptr<Node<T>>& child, int balance);
             
-            bool remove(shared_ptr<Node<T>> node);
+            void remove(shared_ptr<Node<T>> node);
+            
+            void remove(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right);
             
         public:
             AVLTree();
@@ -164,7 +166,8 @@ namespace assignment {
                 
             } else {
                 if (node->amount == 1) {
-                    return remove(node);
+                    remove(node);
+                    return true;
                     
                 } else {
                     node->amount--;
@@ -178,8 +181,96 @@ namespace assignment {
     }
     
     template <class T>
-    bool AVLTree<T>::remove(shared_ptr<Node<T>> node) {
+    void AVLTree<T>::remove(shared_ptr<Node<T>> node) {
+        auto left = node->left;
+        auto right = node->right;
+        if (left && right) {
+            remove(left, node, right);
+            
+        } else if (left) {
+            replace(left, node);
+            balance->remove(node, 0);
+            
+        } else if (right) {
+            replace(right, node);
+            balance->remove(node, 0);
+            
+        } else {
+            auto parent = node->parent;
+            if (parent->left == node) {
+                parent->left = nullptr;
+                balance->remove(parent, -1);
+                
+            } else {
+                parent->right = nullptr;
+                balance->remove(parent, 1);
+            }
+        }
+        values--;
+        total--;
+    }
+    
+    template <class T>
+    void AVLTree<T>::remove(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right) {
+        auto sucessor = right;
+        auto parent = node->parent;
         
+        if (sucessor->left) {
+            while (sucessor->left) {
+                sucessor = sucessor->left;
+            }
+            
+            auto sucessorParent = sucessor->parent;
+            auto sucessorRight = sucessor->right;
+            
+            sucessorParent->left = sucessorRight;
+            if (sucessorRight) {
+                sucessorRight->parent = sucessorParent;
+            }
+            
+            sucessor->parent = parent;
+            sucessor->left = left;
+            sucessor->balance = node->balance;
+            sucessor->right = right;
+            right->parent = sucessor;
+            
+            if (left) {
+                left->parent = sucessor;
+            }
+            
+            if (node == root) {
+                root = sucessor;
+                
+            } else if (parent->left = sucessor) {
+                parent->left = sucessor;
+                
+            } else {
+                parent->right = sucessor;
+            }
+            
+            balance->remove(sucessorParent, -1);
+            
+        } else {
+            sucessor->parent = parent;
+            sucessor->left = left;
+            sucessor->balance = node->balance;
+            
+            if (left) {
+                left->parent = sucessor;
+            }
+            
+            if (node == root) {
+                root = sucessor;
+                
+            } else if (parent->left == node) {
+                parent->left = sucessor;
+                
+            } else {
+                parent->right = sucessor;
+            }
+            
+            balance->remove(sucessor, 1);
+        }
     }
     
     
@@ -219,6 +310,7 @@ namespace assignment {
             auto value = iterator->get();
             stream << (*value);
         }
+        return stream;
     }
     
     
