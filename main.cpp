@@ -25,22 +25,17 @@ using namespace std;
 int main(int argc, char** argv) {
     
     AVLTree<int> tree {};
-    tree.add(2);
-    tree.add(2);
-    tree.add(3);
+    tree.add(14).add(33).add(50).add(72).add(99).add(76).add(78).add(82).add(39).add(45);
+//    
+//    cout << tree.remove(72) << endl;
+//    
+//    cout << tree << endl;
     
-    try {
-        cout << tree << endl;
-        cout << "nodes: " << tree.nodes() << " size: " << tree.size() << endl;
-        
-        tree.remove(2);
-        
-        cout << tree << endl;
-        cout << "nodes: " << tree.nodes() << " size: " << tree.size() << endl;
-    } catch (invalid_argument) {
-        cout << "Error" << endl;
+    auto iterator = tree.iterator(Traversal::ASCENDING);
+    while ((*iterator)++) {
+        auto value = iterator->get();
+        cout << (*value);
     }
-    
     
     return 0;
 }

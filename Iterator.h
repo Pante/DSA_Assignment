@@ -102,13 +102,15 @@ namespace assignment {
     bool AscendingIterator<T>::operator++() {
         if (direction == Direction::RIGHT) {
             current = right;
+            
             while (current->left) {
                 current = current->left;
             }
-
-            right = current->right;
-            if (!right) {
+ 
+            if (!current->right) {
                 direction = Direction::PARENT;
+            } else {
+                right = current->right;
             }
             return true;
             

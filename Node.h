@@ -70,7 +70,22 @@ namespace assignment {
     
     template <class T>
     void replace(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
+        auto left = source->left;
+        auto right = source ->right;
         
+        target->balance = source->balance;
+        target->value = source->value;
+        target->amount = source->amount;
+        target->left = left;
+        target->right = right;
+        
+        if (left) {
+            left->parent = target;
+        }
+        
+        if (right) {
+            right->parent = target;
+        }
     }
     
 }

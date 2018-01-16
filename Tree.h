@@ -36,7 +36,6 @@
 #include <stdexcept>
 
 #include "Node.h"
-#include "Balance.h"
 #include "Iterator.h"
 
 
@@ -48,20 +47,35 @@ namespace assignment {
     class AVLTree {
         private:
             shared_ptr<Node<T>> root;
-            unique_ptr<Balance<T>> balance;
             int values;
             int total;
             
+            
             shared_ptr<Node<T>> add(T value, shared_ptr<Node<T>> parent, shared_ptr<Node<T>>& child, int balance);
+                        
+            void balanceAddition(shared_ptr<Node<T>> node, int balance);
             
             void remove(shared_ptr<Node<T>> node);
             
-            void remove(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right);
+            void removeMiddle(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right);
+            
+            void balanceRemoval(shared_ptr<Node<T>> node, int balance);
+            
+            
+            shared_ptr<Node<T>> rotateLeft(shared_ptr<Node<T>> node);
+            
+            shared_ptr<Node<T>> rotateRight(shared_ptr<Node<T>> node);
+            
+            
+            shared_ptr<Node<T>> rotateLeftRight(shared_ptr<Node<T>> node);
+            
+            shared_ptr<Node<T>> rotateRightLeft(shared_ptr<Node<T>> node);
+            
             
         public:
             AVLTree();
             
-            void add(T value);
+            AVLTree<T>& add(T value);
             
             bool contains(T value, ostream& stream = cout);
             
@@ -82,42 +96,44 @@ namespace assignment {
     template <class T>
     AVLTree<T>::AVLTree() {
         root = shared_ptr<Node<T>>(nullptr);
-        balance = unique_ptr<Balance<T>>(new Balance<T>(root));
         values = 0;
         total = 0;
     }
     
     
     template <class T>
-    void AVLTree<T>::add(T value) {
+    AVLTree<T>& AVLTree<T>::add(T value) {
+        cout << "Value: " << value << endl;
         if (!root) {
             root = make_shared<Node<T>>(value);
             values++;
             total++;
-            return;
+            return *this;
         }
         
         auto node = root;
         while (node) {
             if (node->value < value) {
-                node = add(value, node, node->right, 1);
+                node = add(value, node, node->right, -1);
                 
             } else if (node->value > value) {
-                node = add(value, node, node->left, -1);
+                node = add(value, node, node->left, 1);
                 
             } else {
                 node->amount++;
                 total++;
-                return;
+                return *this;
             }
         }
+        
+        return *this;
     }
     
     template <class T>
-    shared_ptr<Node<T>> AVLTree<T>::add(T value, shared_ptr<Node<T>> parent, shared_ptr<Node<T>>& child, int balance) {
+    shared_ptr<Node<T>> AVLTree<T>::add(T value, shared_ptr<Node<T>> node, shared_ptr<Node<T>>& child, int balance) {
         if (!child) {
-            child = make_shared<Node<T>>(value, parent);
-            this->balance->add(child, balance);
+            child = make_shared<Node<T>>(value, node);
+            balanceAddition(node, balance);
             values++;
             total++;
             return nullptr;
@@ -127,22 +143,59 @@ namespace assignment {
         }
     }
     
+    template <class T>
+    void AVLTree<T>::balanceAddition(shared_ptr<Node<T>> node, int balance) {
+        while (node) {
+            balance = (node->balance += balance);
+
+            if (balance == 0) {
+                return;
+                
+            } else if (balance == 2) {
+                if (node->left->balance == 1) {
+                    rotateRight(node);
+
+                } else {
+                    rotateLeftRight(node);
+                }
+                return;
+                
+            } else if (balance == -2) {
+                if (node->right->balance == -1) {
+                    rotateLeft(node);
+                    
+                } else {
+                    rotateRightLeft(node);
+                }
+                return;
+            }
+            
+            auto parent = node->parent;
+            if (parent) {
+                if (parent->left == node) {
+                    balance = 1;
+                    
+                } else {
+                    balance = -1;
+                }
+            }
+            node = parent;
+        }
+    }
+    
     
     template <class T>
     bool AVLTree<T>::contains(T value, ostream& stream) {
         if (root && root->value == value) {
-            stream << "Root" << endl;
             return true;
         }
         
         auto node = root;
         while (node) {
             if (node->value < value) {
-                stream << "Right" << endl;
                 node = node->right;
                 
             } else if (node->value > value) {
-                stream << "Left" << endl;
                 node = node->left;
                 
             } else {
@@ -185,25 +238,25 @@ namespace assignment {
         auto left = node->left;
         auto right = node->right;
         if (left && right) {
-            remove(left, node, right);
+            removeMiddle(node, left, right);
             
         } else if (left) {
             replace(left, node);
-            balance->remove(node, 0);
+            balanceRemoval(node, 0);
             
         } else if (right) {
             replace(right, node);
-            balance->remove(node, 0);
+            balanceRemoval(node, 0);
             
         } else {
             auto parent = node->parent;
             if (parent->left == node) {
                 parent->left = nullptr;
-                balance->remove(parent, -1);
+                balanceRemoval(parent, -1);
                 
             } else {
                 parent->right = nullptr;
-                balance->remove(parent, 1);
+                balanceRemoval(parent, 1);
             }
         }
         values--;
@@ -211,7 +264,7 @@ namespace assignment {
     }
     
     template <class T>
-    void AVLTree<T>::remove(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right) {
+    void AVLTree<T>::removeMiddle(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right) {
         auto sucessor = right;
         auto parent = node->parent;
         
@@ -232,32 +285,9 @@ namespace assignment {
             sucessor->left = left;
             sucessor->balance = node->balance;
             sucessor->right = right;
+            
             right->parent = sucessor;
-            
-            if (left) {
-                left->parent = sucessor;
-            }
-            
-            if (node == root) {
-                root = sucessor;
-                
-            } else if (parent->left = sucessor) {
-                parent->left = sucessor;
-                
-            } else {
-                parent->right = sucessor;
-            }
-            
-            balance->remove(sucessorParent, -1);
-            
-        } else {
-            sucessor->parent = parent;
-            sucessor->left = left;
-            sucessor->balance = node->balance;
-            
-            if (left) {
-                left->parent = sucessor;
-            }
+            left->parent = sucessor;
             
             if (node == root) {
                 root = sucessor;
@@ -269,8 +299,227 @@ namespace assignment {
                 parent->right = sucessor;
             }
             
-            balance->remove(sucessor, 1);
+            balanceRemoval(sucessorParent, -1);
+            
+        } else {
+            sucessor->parent = parent;
+            sucessor->left = left;
+            sucessor->balance = node->balance;
+            left->parent = sucessor;
+            
+            if (node == root) {
+                root = sucessor;
+                
+            } else if (parent->left == node) {
+                parent->left = sucessor;
+                
+            } else {
+                parent->right = sucessor;
+            }
+            
+            balanceRemoval(sucessor, 1);
         }
+    }
+    
+    template <class T>
+    void AVLTree<T>::balanceRemoval(shared_ptr<Node<T>> node, int balance) {
+        while (node) {
+            balance = (node->balance += balance);
+            if (balance == 2) {
+                if (node->left->balance >= 0) {
+                    node = rotateRight(node);
+                    if (node->balance == -1) {
+                        return;
+                    }
+                    
+                } else {
+                    node = rotateLeftRight(node);
+                }
+                
+            } else if (balance == -2) {
+                if (node->right->balance <= 0) {
+                    node = rotateLeft(node);
+                    if (node->balance == 1) {
+                        return;
+                    }
+                    
+                } else {
+                    node = rotateRightLeft(node);
+                }
+            } else if (balance != 0) {
+                return;
+            }
+            
+            if (node->parent) {
+                balance = node->parent->left ? -1 : 1;
+            }
+            
+            node = node->parent;
+        }
+    }
+    
+    
+    template <class T>
+    shared_ptr<Node<T>> AVLTree<T>::rotateLeft(shared_ptr<Node<T>> node) {
+        auto right = node->right;
+        auto rightLeft = right->left;
+        auto parent = node->parent;
+        
+        right->parent = parent;
+        right->left = node;
+        node->right = rightLeft;
+        node->parent = right;
+        
+        if (rightLeft) {
+            rightLeft->parent = node;
+        }
+        
+        if (node == root) {
+            root = right;
+            
+        } else if (parent->left == node) {
+            parent->left = right;
+            
+        } else {
+            parent->right = right;
+        }
+        
+        right->balance++;
+        node->balance = -right->balance;
+        
+        return right;
+    }
+    
+    template <class T>
+    shared_ptr<Node<T>> AVLTree<T>::rotateRight(shared_ptr<Node<T>> node) {
+        auto left = node->left;
+        auto leftRight = left->right;
+        auto parent = node->parent;
+        
+        left->parent = parent;
+        left->right = node;
+        node->left = leftRight;
+        node->parent = left;
+        
+        if (leftRight) {
+            leftRight->parent = node;
+        }
+        
+        if (node == root) {
+            root = left;
+            
+        } else if (parent->left == node) {
+            parent->left = left;
+            
+        } else {
+            parent->right = left;
+        }
+        
+        left->balance--;
+        node->balance = -left->balance;
+        
+        return left;
+    }
+    
+    
+    template <class T>
+    shared_ptr<Node<T>> AVLTree<T>::rotateLeftRight(shared_ptr<Node<T>> node) {
+        auto left = node->left;
+        auto leftRight = left->right;
+        auto parent = node->parent;
+        
+        auto leftRightRight = leftRight->right;
+        auto leftRightLeft = leftRight->left;
+        
+        leftRight->parent = parent;
+        node->left = leftRightRight;
+        left->right = leftRightLeft;
+        leftRight->left = left;
+        leftRight->right = node;
+        left->parent = leftRight;
+        node->parent = leftRight;
+        
+        if (leftRightRight) {
+            leftRightRight->parent = node;
+        }
+        
+        if (leftRightLeft) {
+            leftRightLeft->parent = left;
+        }
+        
+        if (node == root) {
+            root = leftRight;
+            
+        } else if (parent->left == node) {
+            parent->left = leftRight;
+            
+        } else {
+            parent->right = leftRight;
+        }
+        
+        if (leftRight->balance == -1) {
+            node->balance = 0;
+            left->balance = 1;
+            
+        } else if (leftRight->balance == 1) {
+            node->balance = -1;
+            left->balance = 0;
+            
+        } else {
+            node->balance = 0;
+            left->balance = 0;
+        }
+    }
+    
+    template <class T>
+    shared_ptr<Node<T>> AVLTree<T>::rotateRightLeft(shared_ptr<Node<T>> node) {
+        auto right = node->right;
+        auto rightLeft = right->left;
+        auto parent = node->parent;
+        auto rightLeftLeft = rightLeft->left;
+        auto rightLeftRight = rightLeft->right;
+        
+        rightLeft->parent = parent;
+        node->right = rightLeftLeft;
+        right->left = rightLeftRight;
+        rightLeft->right = right;
+        rightLeft->left = node;
+        right->parent = rightLeft;
+        node->parent = rightLeft;
+        
+        if (rightLeftLeft) {
+            rightLeftLeft->parent = node;
+        }
+        
+        if (rightLeftRight) {
+            rightLeftRight->parent = right;
+        }
+        
+        if (node == root) {
+            root = rightLeft;
+            
+        } else if (parent->left == node) {
+            parent->left = rightLeft;
+            
+        } else {
+            parent->right= rightLeft;
+        }
+        
+        if (rightLeft->balance == 1) {
+            node->balance = 0;
+            right->balance = -1;
+            
+        } else if (rightLeft->balance == 0) {
+            node->balance = 0;
+            right->balance = 0;
+            
+        } else {
+            node->balance = -1;
+            right->balance = 0;
+        }
+        
+        rightLeft->balance = 0;
+        return rightLeft;
     }
     
     
