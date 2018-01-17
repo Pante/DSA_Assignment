@@ -32,30 +32,53 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
-#include <queue>
 #include <stdexcept>
+
+#include "Queue.h"
 #include "Node.h"
 
 using namespace std;
 
 namespace assignment {
     
+    /**
+     * Represents the traversal types of the iterator(s).
+     */
     enum Traversal {
         ASCENDING, LEVEL
     };
     
+    /**
+     * Represents an iterator for an AVL tree.
+     */
     template <class T>
     class Iterator {
         protected:
             shared_ptr<Node<T>> current;
         
         public:
+            /**
+             * Constructs an Iterator which the specified root.
+             */
             Iterator(shared_ptr<Node<T>> root);
             
+            /**
+            * Iterate to the next element in the iteration.
+            * 
+            * @return true if the iteration has more elements; else false
+            */
             virtual bool operator++(int);
             
+            /**
+            * Iterates to the next element in the iteration.
+            * 
+            * @return true if the iteration has more elements; else false
+            */
             virtual bool operator++() =0;
             
+            /**
+             * Returns the current element in the iteration.
+             */
             shared_ptr<Node<T>> get();
     };
     
@@ -75,9 +98,16 @@ namespace assignment {
     }
     
     
+    /**
+     * A concrete subclass of Iterator which iterates through an AVL tree in an
+     * ascending order.
+     */
     template <class T>
     class AscendingIterator : public Iterator<T> {
         private:
+            /**
+             * Represents the direction of the next traversal.
+             */
             enum Direction {
                 RIGHT, PARENT, END
             };
@@ -89,15 +119,33 @@ namespace assignment {
             using Iterator<T>::current;
             using Iterator<T>::operator++;
             
+            /**
+             * Constructs an AscendingIterator with the specified root and
+             * set the direction RIGHT, or END if the specified root is null.
+             */
             AscendingIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
                 current = root;
                 right = root;
                 direction = (current == nullptr) ? Direction::END : Direction::RIGHT;
             }
             
+            /**
+             * Iterates to the next element in the iteration in an ascending order.
+             * 
+             * @return true if the iteration has more elements; else false
+             */
             bool operator++() override;
     };
     
+    /**
+     * If the direction is RIGHT, set the current node as its left-most child. 
+     * After which, set the next node as the current node's right child, or set the direction
+     * as PARENT if the current node has no right child.
+     * 
+     * If the direction is PARENT, set the current node as its parent while the current node has a parent,
+     * and sets the direction to RIGHT if the current node has a right child and returns from the loop, otherwise
+     * sets the direction as END.
+     */
     template <class T>
     bool AscendingIterator<T>::operator++() {
         if (direction == Direction::RIGHT) {
@@ -135,36 +183,51 @@ namespace assignment {
     }
     
     
+    /**
+     * A concrete subclass of Iterator which iterates through an AVL tree level-by-level.
+     */
     template <class T>
     class LevelIterator : public Iterator<T> {
         private:
-            std::queue<shared_ptr<Node<T>>> nodes;
+            week5::Queue<shared_ptr<Node<T>>> nodes;
         
         public:
             using Iterator<T>::current;
             using Iterator<T>::operator++;
             
+            /**
+             * Constructs a LevelIterator with the specified root and appends
+             * the root to the queue if non-null.
+             */
             LevelIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
-                nodes = std::queue<shared_ptr<Node<T>>>();
+                nodes = week5::Queue<shared_ptr<Node<T>>>();
                 if (current) {
-                    nodes.push(current);
+                    nodes.enqueue(current);
                 }
             }
             
+            /**
+             * Iterates through the iteration level-by-level.
+             * 
+             * @return true if the iteration has more elements; else false
+             */
             bool operator++() override;  
     };
     
+    /**
+     * Sets the current node as the front and pops the queue before pushing the 
+     * child nodes into the queue if the queue is not empty.
+     */
     template <class T>
     bool LevelIterator<T>::operator++() {
         if (!nodes.empty()) {
-            current = nodes.front();
-            nodes.pop();
+            current = nodes.take();
             
             if (current->left) {
-                nodes.push(current->left);
+                nodes.enqueue(current->left);
             }
             if (current->right) {
-                nodes.push(current->right);
+                nodes.enqueue(current->right);
             }
             return true;
             

@@ -38,6 +38,10 @@ using namespace std;
 
 namespace assignment {
     
+    /**
+     * Represents a node used in an AVL tree which contains the value, amount, balance and
+     * pointers to its parent, left and right child.
+     */
     template <class T = int>
     struct Node {
         
@@ -49,6 +53,12 @@ namespace assignment {
         shared_ptr<Node<T>> right;
               
         
+        /**
+         * Constructs a Node with the specified value and parent.
+         * 
+         * @param value the value
+         * @param parent the parent of this node, or null if unspecified
+         */
         Node(T value, shared_ptr<Node<T>> parent = shared_ptr<Node<T>>(nullptr)) {
             this->value = value;
             amount = 1;
@@ -58,7 +68,9 @@ namespace assignment {
             right = shared_ptr<Node<T>>(nullptr);
         }
 
-        
+        /**
+         * Streams the specified node the ostream.
+         */
         friend ostream& operator<<(ostream& stream, const Node<T>& node) {
             for (int i = 0; i < node.amount; i++) {
                 stream << node.value << endl;
@@ -68,6 +80,10 @@ namespace assignment {
             
     };
     
+    /**
+     * Replaces the target with the specified source except for the parent of
+     * the specified target.
+     */
     template <class T>
     void replace(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {
         auto left = source->left;

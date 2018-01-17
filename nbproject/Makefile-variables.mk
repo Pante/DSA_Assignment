@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/MinGW-Windows/dsa_assignment
 CND_PACKAGE_DIR_Release=dist/Release/MinGW-Windows/package
 CND_PACKAGE_NAME_Release=dsaassignment.tar
 CND_PACKAGE_PATH_Release=dist/Release/MinGW-Windows/package/dsaassignment.tar
+# Strict configuration
+CND_PLATFORM_Strict=MinGW-Windows
+CND_ARTIFACT_DIR_Strict=dist/Strict/MinGW-Windows
+CND_ARTIFACT_NAME_Strict=dsa_assignment
+CND_ARTIFACT_PATH_Strict=dist/Strict/MinGW-Windows/dsa_assignment
+CND_PACKAGE_DIR_Strict=dist/Strict/MinGW-Windows/package
+CND_PACKAGE_NAME_Strict=dsaassignment.tar
+CND_PACKAGE_PATH_Strict=dist/Strict/MinGW-Windows/package/dsaassignment.tar
 #
 # include compiler specific variables
 #

@@ -43,6 +43,9 @@ using namespace std;
 
 namespace assignment {
     
+    /**
+     * Represents an AVL tree.
+     */
     template <class T>
     class AVLTree {
         private:
@@ -51,48 +54,117 @@ namespace assignment {
             int total;
             
             
+            /**
+             * Initialises the specified child with the value, balances the addition and returns null, or returns the child
+             * node if the specified child node is non-null.
+             */
             shared_ptr<Node<T>> add(T value, shared_ptr<Node<T>> parent, shared_ptr<Node<T>>& child, int balance);
-                        
+            
+            /**
+             * Balances the tree after addition.
+             */
             void balanceAddition(shared_ptr<Node<T>> node, int balance);
             
+            
+            /**
+             * Removes the specified node and balances the tree.
+             */
             void remove(shared_ptr<Node<T>> node);
             
+            /**
+             * Removes the specified node which has the specified left and right child, and balances the removal.
+             */
             void removeMiddle(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right);
             
+            /**
+             * Balances the tree after removal.
+             */
             void balanceRemoval(shared_ptr<Node<T>> node, int balance);
             
             
+            /**
+             * Rotates the parent of the specified node to the left.
+             */
             shared_ptr<Node<T>> rotateLeft(shared_ptr<Node<T>> node);
             
+            /**
+             * Rotates the parent of the specified node to the right.
+             */
             shared_ptr<Node<T>> rotateRight(shared_ptr<Node<T>> node);
             
             
+            /**
+             * Rotates the parent of the specified node to the left and the
+             * new parent of the node to the right.
+             */
             shared_ptr<Node<T>> rotateLeftRight(shared_ptr<Node<T>> node);
             
+            /**
+             * Rotates the parent of the specified node to the right and the
+             * new parent of the node to the left.
+             */
             shared_ptr<Node<T>> rotateRightLeft(shared_ptr<Node<T>> node);
             
             
         public:
+            /**
+             * Constructs an empty AVL tree.
+             */
             AVLTree();
             
+            /**
+             * Adds the specified value..
+             * 
+             * @return this
+             */
             AVLTree<T>& add(T value);
             
+            /**
+             * Returns true if the AVL tree contains the specified value, else false.
+             */
             bool contains(T value, ostream& stream = cout);
             
+            /**
+             * Removes the specified value.
+             * 
+             * @return true if the value was successfully removed, else false
+             */
             bool remove(T value);
             
+            /**
+             * Returns an iterator for the tree with the specified traversal type.
+             * 
+             * @param traversal the traversal type, or level-by-level if unspecified
+             */
             shared_ptr<Iterator<T>> iterator(Traversal traversal = Traversal::LEVEL);
             
+            /**
+             * Returns the value of the node with the specified index.
+             * 
+             * @param index the index of the node
+             */
             T operator[](int index);
             
+            /**
+             * Streams the specified tree to the ostream.
+             */
             template <class V>
             friend ostream& operator<<(ostream& stream, const AVLTree<V>& tree);
             
+            /**
+             * Returns the total number of nodes in the tree.
+             */
             int nodes();
             
+            /**
+             * Returns the total number of values in the tree.
+             */
             int size();
     };
     
+    /**
+     * Constructs an empty AVL tree and sets the root as null.
+     */
     template <class T>
     AVLTree<T>::AVLTree() {
         root = shared_ptr<Node<T>>(nullptr);
@@ -101,9 +173,13 @@ namespace assignment {
     }
     
     
+    /**
+     * Creates the root and returns this, or delegates the addition of the specified value
+     * to #add(T value, shared_ptr<Node<T>> node, shared_ptr<Node<T>>& child, int balance) if
+     * the root is non-null.
+     */
     template <class T>
     AVLTree<T>& AVLTree<T>::add(T value) {
-        cout << "Value: " << value << endl;
         if (!root) {
             root = make_shared<Node<T>>(value);
             values++;
@@ -129,6 +205,15 @@ namespace assignment {
         return *this;
     }
     
+    /**
+    * Initialises the specified child with the value, balances the addition and returns null, or returns the child
+    * node if the specified child node is non-null. Delegates the balancing of the addition to #balanceAddition(shared_ptr<Node<T>> node, int balance).
+     * 
+     * @param value the value of the specified child node to add
+     * @param node the parent of the specified child node to add
+     * @param child the child node to initialise and add
+     * @param balance the new balance of the specified node after addition
+    */
     template <class T>
     shared_ptr<Node<T>> AVLTree<T>::add(T value, shared_ptr<Node<T>> node, shared_ptr<Node<T>>& child, int balance) {
         if (!child) {
@@ -143,6 +228,14 @@ namespace assignment {
         }
     }
     
+    /**
+     * Balances the tree after addition, which starts from the specified node before moving up to its parent iteratively.
+     * Sets the balance which depends on whether the node is the left or right child of its parent.
+     * A balance of 0 indicates that the tree is balanced and hence can be returned.
+     * 
+     * @param shared_ptr<Node<T>> the node to balance
+     * @param balance the new balance of the specified node after addition
+     */
     template <class T>
     void AVLTree<T>::balanceAddition(shared_ptr<Node<T>> node, int balance) {
         while (node) {
@@ -184,6 +277,9 @@ namespace assignment {
     }
     
     
+    /**
+    * Returns true if the AVL tree contains the specified value, else false.
+    */
     template <class T>
     bool AVLTree<T>::contains(T value, ostream& stream) {
         if (root && root->value == value) {
@@ -207,6 +303,12 @@ namespace assignment {
     }
     
     
+    /**
+    * Removes the specified value.
+    * Delegates removal to #remove(shared_ptr<Node<T>> node) if the node amount is 1.
+     * 
+    * @return true if the value was successfully removed, else false
+    */
     template <class T>
     bool AVLTree<T>::remove(T value) {
         auto node = root;
@@ -233,6 +335,13 @@ namespace assignment {
         return false;
     }
     
+    /**
+     * Removes the specified node.
+     * Delegates removal to #removeMiddle(shared_ptr<Node<T>> node) if the
+     * node to remove has both a left and right child.
+     * 
+     * @param node the node
+     */
     template <class T>
     void AVLTree<T>::remove(shared_ptr<Node<T>> node) {
         auto left = node->left;
@@ -263,6 +372,12 @@ namespace assignment {
         total--;
     }
     
+    /**
+     * Removes the node which has the specified left and right child nodes.
+     * Traverses to the left-most child node of the specified right node and replace the removed node
+     * with the child node if the right node has a left child, else set replace the removed node with 
+     * the right node.
+     */
     template <class T>
     void AVLTree<T>::removeMiddle(shared_ptr<Node<T>> node, shared_ptr<Node<T>> left, shared_ptr<Node<T>> right) {
         auto sucessor = right;
@@ -321,6 +436,11 @@ namespace assignment {
         }
     }
     
+    /**
+     * Balances the tree after addition, which starts from the specified node before moving up to its parent iteratively.
+     * Sets the balance which depends on whether the node is the left or right child of its parent.
+     * A balance of either 1 or -1 indicates that the tree has been balanced.
+     */
     template <class T>
     void AVLTree<T>::balanceRemoval(shared_ptr<Node<T>> node, int balance) {
         while (node) {
@@ -359,6 +479,9 @@ namespace assignment {
     }
     
     
+    /**
+    * Rotates the parent of the specified node to the left.
+    */
     template <class T>
     shared_ptr<Node<T>> AVLTree<T>::rotateLeft(shared_ptr<Node<T>> node) {
         auto right = node->right;
@@ -390,6 +513,9 @@ namespace assignment {
         return right;
     }
     
+    /**
+    * Rotates the parent of the specified node to the right.
+    */
     template <class T>
     shared_ptr<Node<T>> AVLTree<T>::rotateRight(shared_ptr<Node<T>> node) {
         auto left = node->left;
@@ -422,6 +548,10 @@ namespace assignment {
     }
     
     
+    /**
+    * Rotates the parent of the specified node to the left and the
+    * new parent of the node to the right.
+    */
     template <class T>
     shared_ptr<Node<T>> AVLTree<T>::rotateLeftRight(shared_ptr<Node<T>> node) {
         auto left = node->left;
@@ -469,8 +599,14 @@ namespace assignment {
             node->balance = 0;
             left->balance = 0;
         }
+        
+        return leftRight;
     }
     
+    /**
+    * Rotates the parent of the specified node to the right and the
+    * new parent of the node to the left.
+    */
     template <class T>
     shared_ptr<Node<T>> AVLTree<T>::rotateRightLeft(shared_ptr<Node<T>> node) {
         auto right = node->right;
@@ -523,6 +659,12 @@ namespace assignment {
     }
     
     
+    /**
+     * Creates an iterator for the nodes in the tree with the specified traversal type
+     * 
+     * @param traversal the traversal type of the iterator, or level-by level if unspecified
+     * @return the iterator
+     */
     template <class T>
     shared_ptr<Iterator<T>> AVLTree<T>::iterator(Traversal traversal) {
         switch (traversal) {
@@ -538,6 +680,13 @@ namespace assignment {
     }
     
     
+    /**
+     * Returns the value of the node at the specified index, level-by-level
+     * from left to right, starting from the root.
+     * 
+     * @param index the index of the node
+     * @return the value of the node at the specified index
+     */
     template <class T>
     T AVLTree<T>::operator[](int index) {
         if (index < 0 || index >= values) {
@@ -552,6 +701,9 @@ namespace assignment {
         return iterator->get()->value;
     }
     
+    /**
+     * Streams the nodes of the tree to the specified ostream. 
+     */
     template <class T>
     ostream& operator<<(ostream& stream, AVLTree<T>& tree) {
         auto iterator = tree.iterator(Traversal::ASCENDING);
@@ -563,11 +715,17 @@ namespace assignment {
     }
     
     
+    /**
+     * Returns the number of nodes in the tree.
+     */
     template <class T>
     int AVLTree<T>::nodes() {
         return values;
     }
     
+    /**
+     * Returns the size of the tree.
+     */
     template <class T>
     int AVLTree<T>::size() {
         return total;
