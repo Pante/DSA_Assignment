@@ -189,7 +189,7 @@ namespace assignment {
     template <class T>
     class LevelIterator : public Iterator<T> {
         private:
-            week5::Queue<shared_ptr<Node<T>>> nodes;
+            Queue<shared_ptr<Node<T>>> nodes;
         
         public:
             using Iterator<T>::current;
@@ -200,9 +200,9 @@ namespace assignment {
              * the root to the queue if non-null.
              */
             LevelIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
-                nodes = week5::Queue<shared_ptr<Node<T>>>();
+                nodes = Queue<shared_ptr<Node<T>>>();
                 if (current) {
-                    nodes.enqueue(current);
+                    nodes.push(current);
                 }
             }
             
@@ -221,13 +221,14 @@ namespace assignment {
     template <class T>
     bool LevelIterator<T>::operator++() {
         if (!nodes.empty()) {
-            current = nodes.take();
+            current = nodes.front();
+            nodes.pop();
             
             if (current->left) {
-                nodes.enqueue(current->left);
+                nodes.push(current->left);
             }
             if (current->right) {
-                nodes.enqueue(current->right);
+                nodes.push(current->right);
             }
             return true;
             

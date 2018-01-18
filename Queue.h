@@ -1,164 +1,158 @@
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Karus Labs.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/* 
+ * File:   Queue.h
+ * Author: Karus Labs
+ *
+ * Created on January 18, 2018, 10:59 PM
+ */
+
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <iostream>
+#include <memory>
 #include <stdexcept>
 
 using namespace std;
 
-namespace week5 {
-
-    template <class T>
-    struct Node {
-
-        Node<T>* previous;
-        Node<T>* next;
-        T item;
-
-
-        Node(T item) : previous {nullptr}, next {nullptr}, item {item} {
-
+namespace assignment {
+    
+    /**
+     * Represents a node which is used in the queue.
+     */
+    template <class T = int>
+    struct QueueNode {
+        
+        T value;
+        shared_ptr<QueueNode<T>> previous;
+        
+        QueueNode(T value, shared_ptr<QueueNode<T>> previous = shared_ptr<QueueNode<T>>(nullptr)) {
+            this->value = value;
+            this->previous = previous;
         }
-
+        
     };
-
-
+    
+    /**
+     * Represents a queue with a linked list implementation.
+     */
     template <class T>
     class Queue {
-
-    public:
-        Queue();
-        ~Queue();
-
-        bool enqueue(T& newItem);
-
-        bool dequeue();
-
-        T take();
-
-        T& peek(); 
-
-        void print();
-
-        bool empty(); 
-
-
-    private:
-        Node<T>* head;
-        Node<T>* tail;
-        int size;
+        private:
+            shared_ptr<QueueNode<T>> head;
+            shared_ptr<QueueNode<T>> tail;
+            int size;
+            
+        public:
+            Queue();
+            
+            void push(T& item);
+            
+            void pop();
+            
+            T& front();
+            
+            bool empty();
     };
-
-    template <class T> Queue<T>::Queue() : head {nullptr}, tail {nullptr}, size {0} {}
-
-    template <class T> Queue<T>::~Queue() {
-        if (tail != nullptr) {
-            Node<T>* current = tail;
-            while (current) {
-                Node<T>* next = current->next;
-                delete current;
-                current = next;
-            }
-        }
+    
+    /**
+     * Constructs a Queue.
+     */
+    template <class T>
+    Queue<T>::Queue() {
+        head = shared_ptr<QueueNode<T>>(nullptr);
+        tail = shared_ptr<QueueNode<T>>(nullptr);
+        size = 0;
     }
-
-    template <class T> bool Queue<T>::enqueue(T& item) {
-        Node<T>* node = new Node<T>(item);
+    
+    /**
+     * Adds the specified item to the tail of the queue.
+     */
+    template <class T>
+    void Queue<T>::push(T& item) {
+        auto node = make_shared<QueueNode<T>>(item);
         if (size == 0) {
-            tail = node;
             head = node;
-
-        } else if (size == 1) {
+            tail = node;
+            
+        } else if (head == tail) {
+            head->previous = node;
+            tail = node;
+            
+        } else {
             tail->previous = node;
-            tail = node;
-            tail->next = head;
-
-        } else {
-            Node<T>* old = tail->previous;
-            old->previous = node;
-            tail = node;
-            tail->next = old;
+            tail = node;   
         }
-
+        
         size++;
-        return true;
     }
-
-    template <class T> bool Queue<T>::dequeue() {
+    
+    /**
+     * Removes the item at the head of the queue.
+     */
+    template <class T>
+    void Queue<T>::pop() {
         if (size == 0) {
-            return false;
-        }
-
-        if (size == 1) {
-            delete head;
-            head == nullptr;
-            head == nullptr;
-
-        } else if (size == 2) {
-            delete head;
-            head = tail;
-            head->previous = nullptr;
-            head->next == nullptr;
-
+            return;
+            
+        } else if (size == 1) {
+            head = nullptr;
+            tail = nullptr;
+            
         } else {
-            Node<T>* node = head->previous;
-            delete head;
-            head = node;
-            head->next = nullptr;
+            head = head->previous;
         }
-
+        
         size--;
-        return true;
     }
-
-    template <class T> T Queue<T>::take() {
+    
+    /**
+     * Returns the element at the head of the queue.
+     * 
+     * @return
+     * @throws invalid_argument if the queue is empty
+     */
+    template <class T>
+    T& Queue<T>::front() {
         if (size == 0) {
-            throw out_of_range("Stack is empty");
+            throw invalid_argument("Queue is empty");
         }
-
-        T item = head->item;
-        if (size == 1) {
-            delete head;
-            head == nullptr;
-            head == nullptr;
-
-        } else if (size == 2) {
-            delete head;
-            head = tail;
-            head->previous = nullptr;
-            head->next == nullptr;
-
-        } else {
-            Node<T>* node = head->previous;
-            delete head;
-            head = node;
-            head->next = nullptr;
-        }
-
-        size--;
-        return item;
+        
+        return head->value;
     }
-
-    template <class T> T& Queue<T>::peek() {
-        if (size > 0) {
-            return head->item;
-
-        } else {
-            throw out_of_range("stack is empty");
-        }
-    }
-
-    template <class T> void Queue<T>::print() {
-        Node<T>* node = head;
-        while (node) {
-            cout << node->item << endl;
-            node = node->previous;
-        }
-    }
-
-    template <class T> bool Queue<T>::empty() {
+    
+    /**
+     * Returns whether the queue is empty.
+     * 
+     * @return true if empty; else false
+     */
+    template <class T>
+    bool Queue<T>::empty() {
         return size == 0;
     }
+    
 }
 
 #endif /* QUEUE_H */

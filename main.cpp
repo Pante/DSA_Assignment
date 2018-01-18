@@ -69,7 +69,6 @@ int input(string message, string error = "Value must be an integer", function<bo
 
 int main(int argc, char** argv) {
     AVLTree<int> tree {};
-    
     while (true) {
         menu();
         switch (input("Please enter an option: ", "Option must be an integer between 1 and 6", [](int option){return 1 <= option && option <= 6;})) {
