@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Karus Labs.
+ * Copyright 2018 PohSeng#1.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@
 
 /* 
  * File:   Tree.h
- * Author: Karus Labs
+ * Author: Matthias Ngeo - S10172190F
+ * Author: Francis Koh - S10172072G
  *
  * Created on January 13, 2018, 4:35 PM
  */
@@ -44,7 +45,9 @@ using namespace std;
 namespace assignment {
     
     /**
-     * Represents an AVL tree.
+     * Represents an AVL tree. The implementation is non-recursive and provides 
+     * a guaranteed time complexity of log(n) for the basic operations, and
+     *
      */
     template <class T>
     class AVLTree {

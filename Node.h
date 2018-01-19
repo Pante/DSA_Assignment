@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Karus Labs.
+ * Copyright 2018 PohSeng#1.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@
 
 /* 
  * File:   Node.h
- * Author: Karus Labs
+ * Author: Matthias Ngeo - S10172190F
+ * Author: Francis Koh - S10172072G
  *
  * Created on January 12, 2018, 12:11 AM
  */
@@ -39,8 +40,8 @@ using namespace std;
 namespace assignment {
     
     /**
-     * Represents a node used in an AVL tree which contains the value, amount, balance and
-     * pointers to its parent, left and right child.
+     * Represents a node which is used in an AVL tree and stores its own amount and value,
+     * and holds a reference to to its parent, left and right child nodes.
      */
     template <class T = int>
     struct Node {
@@ -54,10 +55,10 @@ namespace assignment {
               
         
         /**
-         * Constructs a Node with the specified value and parent.
+         * Constructs a Node with the specified value and reference to its parent.
          * 
          * @param value the value
-         * @param parent the parent of this node, or null if unspecified
+         * @param parent the parent for the node, or null if unspecified
          */
         Node(T value, shared_ptr<Node<T>> parent = shared_ptr<Node<T>>(nullptr)) {
             this->value = value;
@@ -69,7 +70,10 @@ namespace assignment {
         }
 
         /**
-         * Streams the specified node the ostream.
+         * Displays the specified node using the specified ostream.
+         * 
+         * @param stream the ostream which is used to display the node
+         * @param node the node to display
          */
         friend ostream& operator<<(ostream& stream, const Node<T>& node) {
             for (int i = 0; i < node.amount; i++) {
@@ -81,8 +85,10 @@ namespace assignment {
     };
     
     /**
-     * Replaces the target with the specified source except for the parent of
-     * the specified target.
+     * Replaces the specified target using the specified source with the exception of the parent node.
+     * 
+     * @param the source the source which is used to replace the target
+     * @param the target the target which is to be replaced
      */
     template <class T>
     void replace(shared_ptr<Node<T>> source, shared_ptr<Node<T>> target) {

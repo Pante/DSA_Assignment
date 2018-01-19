@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Karus Labs.
+ * Copyright 2018 PohSeng#1.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@
 
 /* 
  * File:   Queue.h
- * Author: Karus Labs
+ * Author: Matthias Ngeo - S10172190F
+ * Author: Francis Koh - S10172072G
  *
  * Created on January 18, 2018, 10:59 PM
  */
@@ -40,7 +41,7 @@ using namespace std;
 namespace assignment {
     
     /**
-     * Represents a node which is used in the queue.
+     * Represents a node which is used in a queue and holds a reference to the previous element.
      */
     template <class T = int>
     struct QueueNode {
@@ -48,15 +49,22 @@ namespace assignment {
         T value;
         shared_ptr<QueueNode<T>> previous;
         
-        QueueNode(T value, shared_ptr<QueueNode<T>> previous = shared_ptr<QueueNode<T>>(nullptr)) {
+        /**
+         * Constructs a QueueNode with the specified value and no reference to the previous node.
+         * 
+         * @param value the value
+         */
+        QueueNode(T value) {
             this->value = value;
-            this->previous = previous;
+            this->previous = make_shared<QueueNode<T>>(nullptr);
         }
         
     };
     
     /**
-     * Represents a queue with a linked list implementation.
+     * Represents a queue based on linked nodes. The tail of the queue is that element 
+     * that has been on the queue the shortest time. New elements are inserted at the tail 
+     * of the queue, and the queue retrieval operations obtain elements at the head of the queue. 
      */
     template <class T>
     class Queue {
@@ -66,19 +74,40 @@ namespace assignment {
             int size;
             
         public:
+            /**
+             * Constructs an empty Queue.
+             */
             Queue();
             
-            void push(T& item);
+            /**
+             * Adds the specified element at the tail of the queue.
+             * 
+             * @param element the item to add 
+             */
+            void push(T& element);
             
+            /**
+             * Removes the element at the head of the queue.
+             */
             void pop();
             
+            /**
+             * Returns a reference to the element at the head of the queue but does not remove it.
+             * 
+             * @return the element
+             */
             T& front();
             
+            /**
+             * Returns whether the queue is empty.
+             * 
+             * @return true if the queue is empty; else false
+             */
             bool empty();
     };
     
     /**
-     * Constructs a Queue.
+     * Constructs an empty Queue.
      */
     template <class T>
     Queue<T>::Queue() {
@@ -88,10 +117,12 @@ namespace assignment {
     }
     
     /**
-     * Adds the specified item to the tail of the queue.
+     * Adds the specified element to the tail of the queue.
+     * 
+     * @param element the element to add to the tail
      */
     template <class T>
-    void Queue<T>::push(T& item) {
+    void Queue<T>::push(T& element) {
         auto node = make_shared<QueueNode<T>>(item);
         if (size == 0) {
             head = node;
@@ -110,7 +141,9 @@ namespace assignment {
     }
     
     /**
-     * Removes the item at the head of the queue.
+     * Removes the element at the head of the queue.
+     * 
+     * @param element the element to remove from the head
      */
     template <class T>
     void Queue<T>::pop() {
@@ -129,9 +162,9 @@ namespace assignment {
     }
     
     /**
-     * Returns the element at the head of the queue.
+     * Returns the element at the head of the queue but does not remove it.
      * 
-     * @return
+     * @return the element at the head of the queue
      * @throws invalid_argument if the queue is empty
      */
     template <class T>
@@ -146,7 +179,7 @@ namespace assignment {
     /**
      * Returns whether the queue is empty.
      * 
-     * @return true if empty; else false
+     * @return true if the queue empty; else false
      */
     template <class T>
     bool Queue<T>::empty() {

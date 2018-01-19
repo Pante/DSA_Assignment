@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Karus Labs.
+ * Copyright 2018 PohSeng#1.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@
 
 /* 
  * File:   Iterator.h
- * Author: Karus Labs
+ * Author: Matthias Ngeo - S10172190F
+ * Author: Francis Koh - S10172072G
  *
  * Created on January 12, 2018, 1:41 AM
  */
@@ -42,14 +43,14 @@ using namespace std;
 namespace assignment {
     
     /**
-     * Represents the traversal types of the iterator(s).
+     * Represents the traversal type of an iterator.
      */
     enum Traversal {
         ASCENDING, LEVEL
     };
     
     /**
-     * Represents an iterator for an AVL tree.
+     * Represents an iterator over the elements in an AVL tree.
      */
     template <class T>
     class Iterator {
@@ -58,12 +59,14 @@ namespace assignment {
         
         public:
             /**
-             * Constructs an Iterator which the specified root.
+             * Constructs an Iterator with the specified root node.
+             * 
+             * @param the root node of the AVL tree
              */
             Iterator(shared_ptr<Node<T>> root);
             
             /**
-            * Iterate to the next element in the iteration.
+            * Iterates to the next element in the iteration.
             * 
             * @return true if the iteration has more elements; else false
             */
@@ -71,27 +74,46 @@ namespace assignment {
             
             /**
             * Iterates to the next element in the iteration.
+             * 
+             * Subclasses should override this method to implement the traversal of elements.
             * 
             * @return true if the iteration has more elements; else false
             */
             virtual bool operator++() =0;
             
             /**
-             * Returns the current element in the iteration.
+             * Returns the current element in the iteration
+             * 
+             * @return the current element
              */
             shared_ptr<Node<T>> get();
     };
     
+    /**
+    * Constructs an Iterator with the specified root node.
+    * 
+    * @param the root node of the AVL tree
+    */
     template <class T>
     Iterator<T>::Iterator(shared_ptr<Node<T>> root) {
         current = root;
     }
     
+    /**
+    * Iterates to the next element in the iteration.
+    * 
+    * @return true if the iteration has more elements; else false
+    */
     template <class T>
     bool Iterator<T>::operator++(int) {
         return operator++();
     }
     
+    /**
+    * Returns the current element in the iteration
+    * 
+    * @return the current element
+    */
     template <class T>
     shared_ptr<Node<T>> Iterator<T>::get() {
         return current;
@@ -99,14 +121,15 @@ namespace assignment {
     
     
     /**
-     * A concrete subclass of Iterator which iterates through an AVL tree in an
-     * ascending order.
+     * A concrete subclass of Iterator over the elements in an AVL tree.
+     * The elements will be returned in ascending order, starting from the element with the smallest
+     * value to the element with the largest value.
      */
     template <class T>
     class AscendingIterator : public Iterator<T> {
         private:
             /**
-             * Represents the direction of the next traversal.
+             * Represents the direction of the traversal.
              */
             enum Direction {
                 RIGHT, PARENT, END
@@ -121,7 +144,7 @@ namespace assignment {
             
             /**
              * Constructs an AscendingIterator with the specified root and
-             * set the direction RIGHT, or END if the specified root is null.
+             * set the direction to RIGHT, or END if the specified root is null.
              */
             AscendingIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
                 current = root;
@@ -138,14 +161,27 @@ namespace assignment {
     };
     
     /**
-     * If the direction is RIGHT, set the current node as its left-most child. 
-     * After which, set the next node as the current node's right child, or set the direction
-     * as PARENT if the current node has no right child.
+    * Iterates to the next element in the iteration in an ascending order.
+    * 
+     * @implSpec
+     * The method first determines the direction of the traversal.
      * 
-     * If the direction is PARENT, set the current node as its parent while the current node has a parent,
-     * and sets the direction to RIGHT if the current node has a right child and returns from the loop, otherwise
-     * sets the direction as END.
-     */
+     * If the direction is RIGHT, it sets the right child of the previous element as the current element.
+     * After which, it sets the it sets the left-most leaf element of the current element as the next node,
+     * and sets the direction to PARENT if the current element has no right child; else sets the right element
+     * as the right child of the current element.
+     * Always returns true.
+     * 
+     * If the direction is PARENT, it iterates through the parents of the elements starting from the current
+     * element while the element has a parent. If the left child of element is equal to the current element,
+     * set the right child of the current element as the next right element and sets the direction to RIGHT 
+     * if the next right element exists and returns true. Otherwise if the element has no parent, set the direction
+     * as END and return false.
+     * 
+     * Otherwise returns false if the direction is END.
+     * 
+    * @return true if the iteration has more elements; else false
+    */
     template <class T>
     bool AscendingIterator<T>::operator++() {
         if (direction == Direction::RIGHT) {
@@ -184,7 +220,9 @@ namespace assignment {
     
     
     /**
-     * A concrete subclass of Iterator which iterates through an AVL tree level-by-level.
+     * A concrete subclass of Iterator over the elements in an AVL tree.
+     * The elements will be returned level-by-level, starting from the root element to the leaf
+     * elements, in left to right order.
      */
     template <class T>
     class LevelIterator : public Iterator<T> {
@@ -196,8 +234,7 @@ namespace assignment {
             using Iterator<T>::operator++;
             
             /**
-             * Constructs a LevelIterator with the specified root and appends
-             * the root to the queue if non-null.
+             * Constructs a LevelIterator with the specified root and pushes the root to the queue if non-null.
              */
             LevelIterator(shared_ptr<Node<T>> root) : Iterator<T>(root) {
                 nodes = Queue<shared_ptr<Node<T>>>();
@@ -207,7 +244,7 @@ namespace assignment {
             }
             
             /**
-             * Iterates through the iteration level-by-level.
+             * Iterates to the next element in the iteration, level-by-level.
              * 
              * @return true if the iteration has more elements; else false
              */
@@ -215,9 +252,17 @@ namespace assignment {
     };
     
     /**
-     * Sets the current node as the front and pops the queue before pushing the 
-     * child nodes into the queue if the queue is not empty.
-     */
+    * Iterates to the next element in the iteration, level-by-level.
+    * 
+     * @implSpec
+     * If the queue is not empty, set the element at the head of the queue as the 
+     * current element and pop the queue before adding the left and right child
+     * of the current element to the queue if they exist respectively.
+     * 
+     * Otherwise returns false if the queue is empty.
+     * 
+    * @return true if the iteration has more elements; else false
+    */
     template <class T>
     bool LevelIterator<T>::operator++() {
         if (!nodes.empty()) {
