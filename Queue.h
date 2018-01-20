@@ -33,7 +33,6 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <memory>
 #include <stdexcept>
 
 using namespace std;
@@ -47,7 +46,7 @@ namespace assignment {
     struct QueueNode {
         
         T value;
-        shared_ptr<QueueNode<T>> previous;
+        QueueNode<T>* previous;
         
         /**
          * Constructs a QueueNode with the specified value and no reference to the previous node.
@@ -56,7 +55,7 @@ namespace assignment {
          */
         QueueNode(T value) {
             this->value = value;
-            this->previous = make_shared<QueueNode<T>>(nullptr);
+            this->previous = nullptr;
         }
         
     };
@@ -69,8 +68,8 @@ namespace assignment {
     template <class T>
     class Queue {
         private:
-            shared_ptr<QueueNode<T>> head;
-            shared_ptr<QueueNode<T>> tail;
+            QueueNode<T>* head;
+            QueueNode<T>* tail;
             int size;
             
         public:
@@ -109,14 +108,14 @@ namespace assignment {
     
     template <class T>
     Queue<T>::Queue() {
-        head = shared_ptr<QueueNode<T>>(nullptr);
-        tail = shared_ptr<QueueNode<T>>(nullptr);
+        head = nullptr;
+        tail = nullptr;
         size = 0;
     }
     
     template <class T>
     void Queue<T>::push(T& element) {
-        auto node = make_shared<QueueNode<T>>(element);
+        auto node = new QueueNode<T>(element);
         if (size == 0) {
             head = node;
             tail = node;
@@ -139,11 +138,15 @@ namespace assignment {
             return;
             
         } else if (size == 1) {
+            delete head;
+            delete tail;
             head = nullptr;
             tail = nullptr;
             
         } else {
+            auto old = head;
             head = head->previous;
+            delete old;
         }
         
         size--;

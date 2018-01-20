@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
             }
                 
             case 5:
-                cout << tree << endl;
+                cout << "Tree: " << endl << tree << endl;
                 break;
                 
             case 6:
