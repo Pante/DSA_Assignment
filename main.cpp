@@ -106,7 +106,7 @@ int input(string message, string error = "Value must be an integer", function<bo
  * Contains the main programme loop.
  */
 int main(int argc, char** argv) {
-    AVLTree<int> tree {};
+    AVLTree<int> tree {};    
     while (true) {
         menu();
         switch (input("Please enter an option: ", "Option must be an integer between 1 and 6", [](int option){return 1 <= option && option <= 6;})) {
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
                     cout << "Successfully removed the value" << endl;
                     
                 } else {
-                    cout << "Failed to remove the value, as it was not present in the tree" << endl;
+                    cout << "Failed to remove the value as it was not present in the tree" << endl;
                 }
                 break;
                 
@@ -129,13 +129,19 @@ int main(int argc, char** argv) {
                     cout << "Value is present in the tree" << endl;
                     
                 } else {
-                    cout << "Value was not present in the tree" << endl;
+                    cout << "Value is not present in the tree" << endl;
                 }
                 break;
             
             case 4: {
-                auto index = input("Please enter the index of the node: ", "Index must be between 0 and " + tree.nodes(), [&tree](int value){return 0 <= value && value < tree.nodes();});
-                cout << "The value at " << index << " is " << tree[index] << endl;
+                if (tree.size() > 0) {
+                    auto index = input("Please enter the index of the node: ", "Index must be between 0 and " + to_string(tree.nodes()), [&tree](int value){return 0 <= value && value < tree.nodes();});
+                    cout << "The value at " << index << " is " << tree[index] << endl;
+                    
+                } else {
+                    cout << "The tree is empty." << endl;
+                }
+                
                 break;
             }
                 

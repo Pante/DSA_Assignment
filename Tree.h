@@ -79,8 +79,6 @@ namespace assignment {
              * 
              * A balance of 0 indicates that the tree has been fully balanced and the loop terminates.
              * 
-             * 
-             * 
              * @param node the parent of the node which was added
              * @param the resultant balance after the addition
              */
@@ -97,12 +95,24 @@ namespace assignment {
             /**
              * Removes the specified node which has both a left and right child, and balances the tree.
              * 
+             * @implSpec
+             * Iterates through the left children of the specified node's right child while it exists
+             * before replacing the specified node with the left-most child if the right child has a 
+             * left child; else replaces the specified node with its right child.
+             * 
              * @param node the node to remove
              */
             void removeMiddle(shared_ptr<Node<T>> node);
             
             /**
              * Balances the tree after removal.
+             * 
+             * @implSpec
+             * Iterates through the parents of the nodes, starting from the specified node 
+             * and updates the balance each time before delegating rotation to appropriate
+             * method which depends on the balance.
+             * 
+             * A balance of either 1 or -1 indicates that the tree has been balanced.
              * 
              * @param node the parent of the node which was removed
              * @param the resultant balance after the removal
@@ -172,7 +182,7 @@ namespace assignment {
              *          /   \           /   \    /   \
              *       [RL]    [?]     [?]  [RRL][RRR]  [?]
              *      /    \
-             * [LRL]      [LRR]
+             * [RRL]      [RRR]
              * 
              * @param node the node to rotate
              * @return the right child of the left node
@@ -293,10 +303,10 @@ namespace assignment {
         auto node = root;
         while (node) {
             if (node->value < value) {
-                node = add(value, node, node->right, -1);
+                node = add(value, node, node->right, 1);
                 
             } else if (node->value > value) {
-                node = add(value, node, node->left, 1);
+                node = add(value, node, node->left, -1);
                 
             } else {
                 node->amount++;
@@ -330,8 +340,8 @@ namespace assignment {
             if (balance == 0) {
                 return;
                 
-            } else if (balance == 2) {
-                if (node->left->balance == 1) {
+            } else if (balance == -2) {
+                if (node->left->balance == -1) {
                     rotateRight(node);
 
                 } else {
@@ -339,8 +349,8 @@ namespace assignment {
                 }
                 return;
                 
-            } else if (balance == -2) {
-                if (node->right->balance == -1) {
+            } else if (balance == 2) {
+                if (node->right->balance == 1) {
                     rotateLeft(node);
                     
                 } else {
@@ -352,10 +362,10 @@ namespace assignment {
             auto parent = node->parent;
             if (parent) {
                 if (parent->left == node) {
-                    balance = 1;
+                    balance = -1;
                     
                 } else {
-                    balance = -1;
+                    balance = 1;
                 }
             }
             node = parent;
@@ -384,6 +394,13 @@ namespace assignment {
     
     template <class T>
     bool AVLTree<T>::remove(T value) {
+        if (total == 1 && root->value == value) {
+            root = nullptr;
+            values--;
+            total--;
+            return true;
+        }
+        
         auto node = root;
         while (node) {
             if (node->value < value) {
@@ -408,13 +425,6 @@ namespace assignment {
         return false;
     }
     
-    /**
-     * Removes the specified node.
-     * Delegates removal to #removeMiddle(shared_ptr<Node<T>> node) if the
-     * node to remove has both a left and right child.
-     * 
-     * @param node the node
-     */
     template <class T>
     void AVLTree<T>::remove(shared_ptr<Node<T>> node) {
         auto left = node->left;
@@ -434,23 +444,17 @@ namespace assignment {
             auto parent = node->parent;
             if (parent->left == node) {
                 parent->left = nullptr;
-                balanceRemoval(parent, -1);
+                balanceRemoval(parent, 1);
                 
             } else {
                 parent->right = nullptr;
-                balanceRemoval(parent, 1);
+                balanceRemoval(parent, -1);
             }
         }
         values--;
         total--;
     }
     
-    /**
-     * Removes the node which has the specified left and right child nodes.
-     * Traverses to the left-most child node of the specified right node and replace the removed node
-     * with the child node if the right node has a left child, else set replace the removed node with 
-     * the right node.
-     */
     template <class T>
     void AVLTree<T>::removeMiddle(shared_ptr<Node<T>> node) {
         auto left = node->left;
@@ -489,7 +493,7 @@ namespace assignment {
                 parent->right = sucessor;
             }
             
-            balanceRemoval(sucessorParent, -1);
+            balanceRemoval(sucessorParent, 1);
             
         } else {
             sucessor->parent = parent;
@@ -507,23 +511,18 @@ namespace assignment {
                 parent->right = sucessor;
             }
             
-            balanceRemoval(sucessor, 1);
+            balanceRemoval(sucessor, -1);
         }
     }
     
-    /**
-     * Balances the tree after addition, which starts from the specified node before moving up to its parent iteratively.
-     * Sets the balance which depends on whether the node is the left or right child of its parent.
-     * A balance of either 1 or -1 indicates that the tree has been balanced.
-     */
     template <class T>
     void AVLTree<T>::balanceRemoval(shared_ptr<Node<T>> node, int balance) {
         while (node) {
             balance = (node->balance += balance);
-            if (balance == 2) {
-                if (node->left->balance >= 0) {
+            if (balance == -2) {
+                if (node->left->balance <= 0) {
                     node = rotateRight(node);
-                    if (node->balance == -1) {
+                    if (node->balance == 1) {
                         return;
                     }
                     
@@ -531,10 +530,10 @@ namespace assignment {
                     node = rotateLeftRight(node);
                 }
                 
-            } else if (balance == -2) {
-                if (node->right->balance <= 0) {
+            } else if (balance == 2) {
+                if (node->right->balance >= 0) {
                     node = rotateLeft(node);
-                    if (node->balance == 1) {
+                    if (node->balance == -1) {
                         return;
                     }
                     
@@ -546,7 +545,7 @@ namespace assignment {
             }
             
             if (node->parent) {
-                balance = node->parent->left ? -1 : 1;
+                balance = node->parent->left ? 1 : -1;
             }
             
             node = node->parent;
@@ -579,8 +578,8 @@ namespace assignment {
             parent->right = right;
         }
         
-        right->balance++;
-        node->balance = -right->balance;
+        right->balance--;
+        node->balance = right->balance;
         
         return right;
     }
@@ -610,8 +609,8 @@ namespace assignment {
             parent->right = left;
         }
         
-        left->balance--;
-        node->balance = -left->balance;
+        left->balance++;
+        node->balance = left->balance;
         
         return left;
     }
@@ -652,12 +651,12 @@ namespace assignment {
             parent->right = leftRight;
         }
         
-        if (leftRight->balance == -1) {
+        if (leftRight->balance == 1) {
             node->balance = 0;
-            left->balance = 1;
+            left->balance = -1;
             
-        } else if (leftRight->balance == 1) {
-            node->balance = -1;
+        } else if (leftRight->balance == -1) {
+            node->balance = 1;
             left->balance = 0;
             
         } else {
@@ -702,16 +701,16 @@ namespace assignment {
             parent->right= rightLeft;
         }
         
-        if (rightLeft->balance == 1) {
+        if (rightLeft->balance == -1) {
             node->balance = 0;
-            right->balance = -1;
+            right->balance = 1;
             
-        } else if (rightLeft->balance == 0) {
-            node->balance = 0;
+        } else if (rightLeft->balance == 1) {
+            node->balance = -1;
             right->balance = 0;
             
         } else {
-            node->balance = -1;
+            node->balance = 0;
             right->balance = 0;
         }
         
