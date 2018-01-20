@@ -74,8 +74,8 @@ namespace assignment {
             
             /**
             * Iterates to the next element in the iteration.
-             * 
-             * Subclasses should override this method to implement the traversal of elements.
+            * 
+            * Subclasses should override this method to implement the traversal of elements.
             * 
             * @return true if the iteration has more elements; else false
             */
@@ -89,31 +89,16 @@ namespace assignment {
             shared_ptr<Node<T>> get();
     };
     
-    /**
-    * Constructs an Iterator with the specified root node.
-    * 
-    * @param the root node of the AVL tree
-    */
     template <class T>
     Iterator<T>::Iterator(shared_ptr<Node<T>> root) {
         current = root;
     }
     
-    /**
-    * Iterates to the next element in the iteration.
-    * 
-    * @return true if the iteration has more elements; else false
-    */
     template <class T>
     bool Iterator<T>::operator++(int) {
         return operator++();
     }
     
-    /**
-    * Returns the current element in the iteration
-    * 
-    * @return the current element
-    */
     template <class T>
     shared_ptr<Node<T>> Iterator<T>::get() {
         return current;
@@ -153,35 +138,31 @@ namespace assignment {
             }
             
             /**
-             * Iterates to the next element in the iteration in an ascending order.
+            * Iterates to the next element in the iteration in an ascending order.
+            * 
+             * @implSpec
+             * The method first determines the direction of the traversal.
              * 
-             * @return true if the iteration has more elements; else false
-             */
+             * If the direction is RIGHT, it sets the right child of the previous element as the current element.
+             * After which, it sets the it sets the left-most leaf element of the current element as the next node,
+             * and sets the direction to PARENT if the current element has no right child; else sets the right element
+             * as the right child of the current element.
+             * Always returns true.
+             * 
+             * If the direction is PARENT, it iterates through the parents of the elements starting from the current
+             * element while the element has a parent. If the left child of element is equal to the current element,
+             * set the right child of the current element as the next right element and sets the direction to RIGHT 
+             * if the next right element exists and returns true. Otherwise if the element has no parent, set the direction
+             * as END and return false.
+             * 
+             * Otherwise returns false if the direction is END.
+             * 
+            * @return true if the iteration has more elements; else false
+            */
             bool operator++() override;
     };
     
-    /**
-    * Iterates to the next element in the iteration in an ascending order.
-    * 
-     * @implSpec
-     * The method first determines the direction of the traversal.
-     * 
-     * If the direction is RIGHT, it sets the right child of the previous element as the current element.
-     * After which, it sets the it sets the left-most leaf element of the current element as the next node,
-     * and sets the direction to PARENT if the current element has no right child; else sets the right element
-     * as the right child of the current element.
-     * Always returns true.
-     * 
-     * If the direction is PARENT, it iterates through the parents of the elements starting from the current
-     * element while the element has a parent. If the left child of element is equal to the current element,
-     * set the right child of the current element as the next right element and sets the direction to RIGHT 
-     * if the next right element exists and returns true. Otherwise if the element has no parent, set the direction
-     * as END and return false.
-     * 
-     * Otherwise returns false if the direction is END.
-     * 
-    * @return true if the iteration has more elements; else false
-    */
+    
     template <class T>
     bool AscendingIterator<T>::operator++() {
         if (direction == Direction::RIGHT) {
@@ -244,25 +225,21 @@ namespace assignment {
             }
             
             /**
-             * Iterates to the next element in the iteration, level-by-level.
+            * Iterates to the next element in the iteration, level-by-level.
+            * 
+             * @implSpec
+             * If the queue is not empty, set the element at the head of the queue as the 
+             * current element and pop the queue before adding the left and right child
+             * of the current element to the queue if they exist respectively.
              * 
-             * @return true if the iteration has more elements; else false
-             */
+             * Otherwise returns false if the queue is empty.
+             * 
+            * @return true if the iteration has more elements; else false
+            */
             bool operator++() override;  
     };
     
-    /**
-    * Iterates to the next element in the iteration, level-by-level.
-    * 
-     * @implSpec
-     * If the queue is not empty, set the element at the head of the queue as the 
-     * current element and pop the queue before adding the left and right child
-     * of the current element to the queue if they exist respectively.
-     * 
-     * Otherwise returns false if the queue is empty.
-     * 
-    * @return true if the iteration has more elements; else false
-    */
+    
     template <class T>
     bool LevelIterator<T>::operator++() {
         if (!nodes.empty()) {

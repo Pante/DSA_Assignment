@@ -106,9 +106,7 @@ namespace assignment {
             bool empty();
     };
     
-    /**
-     * Constructs an empty Queue.
-     */
+    
     template <class T>
     Queue<T>::Queue() {
         head = shared_ptr<QueueNode<T>>(nullptr);
@@ -116,14 +114,9 @@ namespace assignment {
         size = 0;
     }
     
-    /**
-     * Adds the specified element to the tail of the queue.
-     * 
-     * @param element the element to add to the tail
-     */
     template <class T>
     void Queue<T>::push(T& element) {
-        auto node = make_shared<QueueNode<T>>(item);
+        auto node = make_shared<QueueNode<T>>(element);
         if (size == 0) {
             head = node;
             tail = node;
@@ -140,11 +133,6 @@ namespace assignment {
         size++;
     }
     
-    /**
-     * Removes the element at the head of the queue.
-     * 
-     * @param element the element to remove from the head
-     */
     template <class T>
     void Queue<T>::pop() {
         if (size == 0) {
@@ -160,13 +148,7 @@ namespace assignment {
         
         size--;
     }
-    
-    /**
-     * Returns the element at the head of the queue but does not remove it.
-     * 
-     * @return the element at the head of the queue
-     * @throws invalid_argument if the queue is empty
-     */
+   
     template <class T>
     T& Queue<T>::front() {
         if (size == 0) {
@@ -176,11 +158,6 @@ namespace assignment {
         return head->value;
     }
     
-    /**
-     * Returns whether the queue is empty.
-     * 
-     * @return true if the queue empty; else false
-     */
     template <class T>
     bool Queue<T>::empty() {
         return size == 0;
