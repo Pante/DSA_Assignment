@@ -63,7 +63,7 @@ namespace assignment {
     /**
      * Represents a queue based on linked nodes. The tail of the queue is that element 
      * that has been on the queue the shortest time. New elements are inserted at the tail 
-     * of the queue, and the queue retrieval operations obtain elements at the head of the queue. 
+     * of the queue, and the retrieval operations obtain elements from the head of the queue. 
      */
     template <class T>
     class Queue {
