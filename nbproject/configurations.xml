@@ -96,6 +96,7 @@
         <ccTool>
           <architecture>2</architecture>
           <standard>11</standard>
+          <commandLine>-O2</commandLine>
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
