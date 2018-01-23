@@ -103,10 +103,31 @@ int input(string message, string error = "Value must be an integer", function<bo
 }
 
 /**
+ * Initialises the specified tree.
+ * 
+ * @param tree the tree to initialise
+ */
+template <class T>
+void initialise(AVLTree<T>& tree) {
+    cout << "AVL Tree Populator" << endl;
+    int value = input("Please enter the sum of nodes: ");
+    cout << "Populating AVL tree" << endl;
+
+    int total = 0;
+    int i = 0;
+    while(total < value) {
+        total += ++i;
+        cout << "\nInserting " << i << "..." << endl;
+        tree.add(i);;
+    }
+}
+
+/**
  * Contains the main programme loop.
  */
 int main(int argc, char** argv) {
-    AVLTree<int> tree {};    
+    AVLTree<int> tree {};
+    initialise<int>(tree);
     while (true) {
         menu();
         switch (input("Please enter an option: ", "Option must be an integer between 1 and 6", [](int option){return 1 <= option && option <= 6;})) {
