@@ -96,7 +96,7 @@
         <ccTool>
           <architecture>2</architecture>
           <standard>11</standard>
-          <commandLine>-O2 -static-libstdc++ -static-libgcc</commandLine>
+          <commandLine>-O2 -static -static-libstdc++ -static-libgcc</commandLine>
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>

@@ -42,8 +42,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m64 -O2 -static-libstdc++ -static-libgcc
-CXXFLAGS=-m64 -O2 -static-libstdc++ -static-libgcc
+CCFLAGS=-m64 -O2 -static -static-libstdc++ -static-libgcc
+CXXFLAGS=-m64 -O2 -static -static-libstdc++ -static-libgcc
 
 # Fortran Compiler Flags
 FFLAGS=
