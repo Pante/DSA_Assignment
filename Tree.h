@@ -24,7 +24,7 @@
 
 /* 
  * File:   Tree.h
- * Author: Matthias Ngeo - S10172190F
+ * Author: Matthias Ngeo - S10172190FF
  * Author: Francis Koh - S10172072G
  *
  * Created on January 13, 2018, 4:35 PM
@@ -376,12 +376,18 @@ namespace assignment {
     template <class T>
     bool AVLTree<T>::contains(T value, ostream& stream) {
         auto node = root;
+        if (root && root->value) {
+            cout << "Root" << endl;
+        }
+        
         while (node) {
             if (node->value < value) {
                 node = node->right;
+                stream << "Right" << endl;
                 
             } else if (node->value > value) {
                 node = node->left;
+                stream << "Left" << endl;
                 
             } else {
                 return true;
@@ -741,7 +747,7 @@ namespace assignment {
         }
         
         shared_ptr<Iterator<T>> iterator = this->iterator();
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i <= index; i++) {
             (*iterator)++;
         }
         
